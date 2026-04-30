@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SRTMU Hostel Management{% block title_suffix %}{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+:root{--navy:#1a3a6e;--navyD:#0f2348;--gold:#c8a96e;--green:#22c55e;--red:#ef4444;--orange:#f97316;--blue:#3b82f6;--muted:#64748b;--border:#e2e8f0;--teal:#0891b2;}
+*{box-sizing:border-box;font-family:'Nunito',sans-serif;}
+body{background:#f0f2f7;margin:0;}
+.sidebar{width:240px;background:linear-gradient(180deg,var(--navy) 0%,var(--navyD) 100%);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;box-shadow:4px 0 20px rgba(0,0,0,.15);}
+.sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-brand{display:flex;align-items:center;gap:10px;}
+.sidebar-icon{width:44px;height:44px;border-radius:10px;background:rgba(200,169,110,.15);border:2px solid rgba(200,169,110,.4);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.sidebar-title{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:.5px;}
+.sidebar-sub{font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;}
+nav.sidebar-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;text-align:left;background:transparent;border-left:3px solid transparent;color:rgba(255,255,255,.5);font-size:13px;font-weight:500;text-decoration:none;transition:all .15s;}
+.nav-item:hover{background:rgba(200,169,110,.1);color:rgba(255,255,255,.8);}
+.nav-item.active{background:rgba(200,169,110,.15);border-left:3px solid var(--gold);color:var(--gold);font-weight:800;}
+.nav-item .nav-icon{font-size:17px;}
+.nav-section-label{font-size:9px;font-weight:900;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.8px;padding:10px 14px 4px;margin-top:6px;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.4);text-align:center;}
+.main-wrap{margin-left:240px;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 4px rgba(0,0,0,.06);position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:14px;font-weight:800;color:var(--navy);}
+.topbar-sub{font-size:11px;color:#aaa;margin-top:1px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);}
+.content{flex:1;padding:28px;}
+.card-srtmu{background:#fff;border-radius:14px;padding:22px 24px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:20px;}
+.stat-card{background:#fff;border-radius:14px;padding:18px 22px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);}
+.badge-srtmu{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;}
+.badge-Paid,.badge-paid{background:#dcfce7;color:#16a34a;}.badge-Pending,.badge-pending{background:#fee2e2;color:#dc2626;}.badge-Partial,.badge-partial{background:#fef9c3;color:#ca8a04;}
+.badge-Open,.badge-open{background:#fee2e2;color:#dc2626;}.badge-Resolved,.badge-resolved{background:#dcfce7;color:#16a34a;}.badge-In.Progress{background:#fef3c7;color:#d97706;}
+.badge-High{background:#fee2e2;color:#dc2626;}.badge-Urgent{background:#fce7f3;color:#9d174d;}.badge-Normal{background:#f1f5f9;color:#475569;}
+.badge-Male{background:#dbeafe;color:#1d4ed8;}.badge-Female{background:#fce7f3;color:#9d174d;}
+.badge-SC{background:#ede9fe;color:#7c3aed;}.badge-ST{background:#dcfce7;color:#16a34a;}.badge-OBC{background:#fef3c7;color:#d97706;}
+.badge-VJNT{background:#fff7ed;color:#c2410c;}.badge-General{background:#f1f5f9;color:#475569;}
+.badge-submitted{background:#dbeafe;color:#1d4ed8;}.badge-verified{background:#dcfce7;color:#16a34a;}.badge-rejected{background:#fee2e2;color:#dc2626;}
+.btn-navy{background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-decoration:none;}
+.btn-navy:hover{background:var(--navyD);color:#fff;}
+.btn-success-srtmu{background:#16a34a;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-decoration:none;}
+.btn-success-srtmu:hover{background:#15803d;color:#fff;}
+.btn-danger-srtmu{background:#dc2626;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none;}
+.btn-ghost{background:#f1f5f9;color:var(--navy);border:1px solid var(--border);border-radius:9px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.btn-orange{background:#ea580c;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.btn-sm{padding:5px 12px!important;font-size:12px!important;}
+.table-srtmu{width:100%;border-collapse:collapse;}
+.table-srtmu thead tr{background:#f8fafc;}
+.table-srtmu th{padding:11px 14px;text-align:left;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.table-srtmu td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;}
+.table-srtmu tr:last-child td{border-bottom:none;}
+.form-section{background:#f8fafc;border-radius:10px;padding:16px;margin-bottom:16px;}
+.form-section-title{font-size:12px;font-weight:800;color:var(--navy);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;}
+.alert-srtmu{padding:11px 16px;border-radius:9px;margin-bottom:16px;font-size:13px;font-weight:600;}
+.alert-success-srtmu{background:#dcfce7;color:#16a34a;border-left:4px solid #16a34a;}
+.alert-error-srtmu{background:#fee2e2;color:#dc2626;border-left:4px solid #dc2626;}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.page-title{font-size:22px;font-weight:900;color:var(--navy);}
+.doc-upload-card{border:2px dashed var(--border);border-radius:10px;padding:14px;text-align:center;background:#fafafa;transition:all .15s;}
+.doc-upload-card:hover{border-color:var(--navy);background:#f0f4ff;}
+.doc-status-badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:800;}
+/* Developer Modal */
+.dev-btn{background:rgba(200,169,110,.12);border:1px solid rgba(200,169,110,.3);color:var(--gold);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:800;cursor:pointer;width:100%;margin-top:8px;transition:all .2s;font-family:'Nunito',sans-serif;}
+.dev-btn:hover{background:rgba(200,169,110,.25);border-color:rgba(200,169,110,.6);}
+.dev-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;}
+.dev-modal-overlay.show{display:flex;}
+.dev-modal{background:#fff;border-radius:20px;padding:0;max-width:680px;width:95%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.dev-modal-header{background:linear-gradient(135deg,#1a3a6e,#0f2348);color:#fff;padding:28px 32px;border-radius:20px 20px 0 0;text-align:center;}
+.dev-card{display:flex;align-items:flex-start;gap:16px;padding:20px 24px;border-bottom:1px solid #f1f5f9;}
+.dev-card:last-child{border-bottom:none;}
+.dev-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid #e2e8f0;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.dev-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+@keyframes fadeSlideIn{0%{opacity:0;transform:translateX(-8px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes creditPulse{0%,100%{opacity:.6}50%{opacity:1}}
+.dev-credits{display:flex;flex-direction:column;gap:5px;}
+.dev-credit-item{padding:4px 8px;border-radius:6px;background:rgba(200,169,110,.06);border-left:2px solid rgba(200,169,110,.25);animation:fadeSlideIn .5s ease both,creditPulse 3s ease-in-out infinite;}
+.dev-credit-item:hover{background:rgba(200,169,110,.14);border-left-color:rgba(200,169,110,.7);transition:all .2s;}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-brand">
+      <div class="sidebar-icon">🏛️</div>
+      <div>
+        <div class="sidebar-title">SRTMU NANDED</div>
+        <div class="sidebar-sub">HOSTEL MANAGEMENT</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span class="nav-icon">⚡</span> Dashboard</a>
+
+    <div class="nav-section-label">Admissions</div>
+    <a href="{% url 'student_list' %}" class="nav-item {% if 'student' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">👤</span> Students</a>
+    <a href="{% url 'hostel_admission_config' %}" class="nav-item {% if 'hostel_admission' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">⚙️</span> Hostel Admission</a>
+    <div class="nav-section-label">Hostel</div>
+    <a href="{% url 'room_allocation' %}" class="nav-item {% if request.resolver_match.url_name == 'room_allocation' %}active{% endif %}"><span class="nav-icon">🛏️</span> Room Allocation</a>
+    <a href="{% url 'room_grid' %}" class="nav-item {% if request.resolver_match.url_name == 'room_grid' %}active{% endif %}"><span class="nav-icon">🏠</span> Room Grid</a>
+    <a href="{% url 'fee_tracking' %}" class="nav-item {% if 'fee' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">💰</span> Fee Tracking</a>
+    <a href="{% url 'complaint_list' %}" class="nav-item {% if 'complaint' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">🔨</span> Complaints</a>
+    <a href="{% url 'leave_list' %}" class="nav-item {% if 'leave' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">📋</span> Leave</a>
+
+    <div class="nav-section-label">System</div>
+    <a href="{% url 'export_reports' %}" class="nav-item {% if 'export' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">📊</span> Export / Reports</a>
+    <a href="{% url 'academic_year_list' %}" class="nav-item {% if 'academic_year' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">📅</span> Academic Years</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="dev-btn" onclick="document.getElementById('devModal').classList.add('show')">👨‍💻 Meet the Developers</button>
+    <div style="font-size:8px;color:rgba(255,255,255,.25);margin-top:6px;line-height:1.4;">School of Computational Sciences<br/>SRTMU Nanded</div>
+  </div>
+</div>
+
+<!-- Developer Modal -->
+<div class="dev-modal-overlay" id="devModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="dev-modal">
+    <div class="dev-modal-header">
+      <div style="font-size:32px;margin-bottom:8px;">👨‍💻</div>
+      <div style="font-size:20px;font-weight:900;letter-spacing:.3px;">Meet the Developers</div>
+      <div style="font-size:12px;color:rgba(200,169,110,.8);margin-top:4px;">Smart Hostel Management System · SRTMU Nanded</div>
+      <button onclick="document.getElementById('devModal').classList.remove('show')" style="position:absolute;top:16px;right:20px;background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <div style="padding:0;">
+      <!-- Dev 1 -->
+      <div class="dev-card">
+        <div class="dev-avatar">🧑‍🎓</div>
+        <div style="flex:1;">
+          <div style="font-size:17px;font-weight:900;color:#1a3a6e;">Yogesh Yannawar</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px;">Lead Developer & Backend Architect</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+            <span style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">M.Sc. Computer Science</span>
+            <span style="background:#f0f4ff;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">2nd Year · Batch 2024–2026</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">School of Computational Sciences</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:8px;">SRTMU Nanded · Maharashtra · India</div>
+        </div>
+      </div>
+      <!-- Dev 2 -->
+      <div class="dev-card">
+        <div class="dev-avatar">🧑‍🎓</div>
+        <div style="flex:1;">
+          <div style="font-size:17px;font-weight:900;color:#1a3a6e;">Somesh Mamilwar</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px;">Frontend Developer & UI Designer</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+            <span style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">M.Sc. Computer Science</span>
+            <span style="background:#f0f4ff;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">2nd Year · Batch 2024–2026</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">School of Computational Sciences</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:8px;">SRTMU Nanded · Maharashtra · India</div>
+        </div>
+      </div>
+      <!-- Dev 3 -->
+      <div class="dev-card">
+        <div class="dev-avatar">🧑‍🎓</div>
+        <div style="flex:1;">
+          <div style="font-size:17px;font-weight:900;color:#1a3a6e;">Shaikh Mateen</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px;">Database Design & System Integration</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+            <span style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">M.Sc. Computer Applications</span>
+            <span style="background:#f0f4ff;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">2nd Year · Batch 2024–2026</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">School of Computational Sciences</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:8px;">SRTMU Nanded · Maharashtra · India</div>
+        </div>
+      </div>
+      <!-- Project Info -->
+      <div style="padding:18px 24px;background:#f8fafc;border-radius:0 0 20px 20px;text-align:center;">
+        <div style="font-size:13px;font-weight:800;color:#1a3a6e;">Smart Hostel Management System</div>
+        <div style="font-size:11px;color:#64748b;margin-top:4px;">Built with Django · Bootstrap 5 · SQLite · Academic Year 2025–2026</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Submitted to: School of Computational Sciences, SRTMU Nanded</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-wrap">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Swami Ramanand Teerth Marathwada University</div>
+      <div class="topbar-sub">Smart Hostel Management System · Nanded · Est. 2001</div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span style="font-size:12px;color:#888;" id="curr-date"></span>
+      <div class="live-dot"></div>
+      <span style="font-size:11px;color:var(--green);font-weight:700;">LIVE</span>
+      {% if user.is_authenticated %}
+      <div style="display:flex;align-items:center;gap:10px;padding-left:12px;border-left:1px solid var(--border);">
+        <div style="text-align:right;">
+          <div style="font-size:12px;font-weight:800;color:var(--navy);">👤 {{ user.username }}</div>
+          <div style="font-size:10px;color:var(--muted);">Administrator</div>
+        </div>
+        <form method="post" action="/logout/" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;">🚪 Logout</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="content">
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert-srtmu {% if msg.tags == 'error' %}alert-error-srtmu{% else %}alert-success-srtmu{% endif %}">
+          {% if msg.tags == 'error' %}❌{% else %}✅{% endif %} {{ msg }}
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+<script>
+document.getElementById('curr-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

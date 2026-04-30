@@ -1,0 +1,103 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} - Students{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">👤 Students <span style="font-size:14px;font-weight:600;color:var(--muted)">({{ total }})</span></h1>
+  <a href="{% url 'student_add' %}" class="btn-navy">➕ Add Student</a>
+</div>
+
+<div class="card-srtmu" style="padding:14px 18px;margin-bottom:16px;">
+  <form method="get" class="d-flex gap-2 flex-wrap">
+    <input name="q" value="{{ q }}" placeholder="🔍 Search name, Aadhaar, room…" class="form-control" style="max-width:220px"/>
+    <!-- Academic Year filter -->
+    <select name="academic_year" class="form-select" style="max-width:150px;border:2px solid #bfdbfe;background:#eff6ff;font-weight:700;">
+      <option value="">📅 All Years</option>
+      {% for y in all_years %}
+      <option value="{{ y.pk }}" {% if year_filter == y.pk|stringformat:"s" %}selected{% endif %}>
+        {{ y.label }}{% if y.is_current %} ✅{% endif %}
+      </option>
+      {% endfor %}
+    </select>
+    <select name="hostel" class="form-select" style="max-width:160px">
+      <option value="">All Hostels</option>
+      {% for h in hostels %}<option {% if h == hostel_filter %}selected{% endif %}>{{ h }}</option>{% endfor %}
+    </select>
+    <select name="department" class="form-select" style="max-width:220px">
+      <option value="">All Departments</option>
+      {% for val, label in departments %}<option value="{{ val }}" {% if val == dept_filter %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="category" class="form-select" style="max-width:130px">
+      <option value="">All Categories</option>
+      {% for c in categories %}<option {% if c == cat_filter %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+    <select name="fees" class="form-select" style="max-width:130px">
+      <option value="">All Fee Status</option>
+      <option {% if fee_filter == 'Paid' %}selected{% endif %}>Paid</option>
+      <option {% if fee_filter == 'Pending' %}selected{% endif %}>Pending</option>
+      <option {% if fee_filter == 'Partial' %}selected{% endif %}>Partial</option>
+    </select>
+    <button type="submit" class="btn-navy">🔍 Filter</button>
+    <a href="{% url 'student_list' %}" class="btn-ghost">✕ Clear</a>
+  </form>
+</div>
+
+<div class="card-srtmu" style="padding:0;overflow:hidden;">
+  <div class="table-responsive">
+    <table class="table-srtmu">
+      <thead><tr>
+        <th>Student</th><th>Aadhaar</th><th>Dept / Course</th><th>Year</th><th>Academic Year</th><th>Hostel · Room</th><th>Fee</th><th>Receipt No.</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              {% if s.photo %}
+              <img src="{{ s.photo.url }}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;"/>
+              {% else %}
+              <div style="width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:18px;">👤</div>
+              {% endif %}
+              <div>
+                <div style="font-weight:800;font-size:13px">{{ s.name }}</div>
+                <div style="font-size:11px;color:var(--muted)">📱 {{ s.phone }}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:12px;font-family:monospace">{{ s.aadhar }}</td>
+          <td>
+            <div style="font-size:11px;font-weight:700;color:var(--navy)">{{ s.school|truncatechars:30 }}</div>
+            <div style="font-size:11px;color:var(--muted)">{{ s.course }}</div>
+          </td>
+          <td><span style="background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:800">{{ s.year }}</span></td>
+          <td>
+            {% if s.academic_year %}
+            <span style="background:#f0fdf4;color:#16a34a;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:800">{{ s.academic_year.label }}</span>
+            {% else %}
+            <span style="color:#ccc;font-size:11px;">—</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="font-size:12px;font-weight:700">{{ s.hostel }}</div>
+            {% if s.room %}<span style="background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700">{{ s.room }}</span>{% endif %}
+          </td>
+          <td><span class="badge-srtmu badge-{{ s.fees }}">{{ s.fees }}</span></td>
+          <td style="font-size:12px;font-family:monospace">{% if s.receipt_number %}{{ s.receipt_number }}{% else %}<span style="color:#ccc">—</span>{% endif %}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'student_detail' s.pk %}" class="btn-ghost btn-sm">👁</a>
+              <a href="{% url 'student_edit' s.pk %}" class="btn-navy btn-sm">✏️</a>
+              <a href="{% url 'student_delete' s.pk %}" class="btn-danger-srtmu btn-sm">🗑</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">No students found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">
+    Showing {{ students|length }} of {{ total }} students
+  </div>
+</div>
+{% endblock %}

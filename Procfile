@@ -1,0 +1,1 @@
+web: gunicorn srtmu_project.wsgi

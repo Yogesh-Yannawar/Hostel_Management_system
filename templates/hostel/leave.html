@@ -1,0 +1,73 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} - Leave Management{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">📋 Leave Management</h1>
+  <a href="{% url 'leave_add' %}" class="btn-navy">➕ Apply Leave</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="stat-card" style="border-top:3px solid var(--orange)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Pending</div><div style="font-size:26px;font-weight:900;color:var(--orange)">⏳ {{ pending_count }}</div></div></div>
+  <div class="col-md-4"><div class="stat-card" style="border-top:3px solid var(--green)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Approved</div><div style="font-size:26px;font-weight:900;color:var(--green)">✅ {{ approved_count }}</div></div></div>
+  <div class="col-md-4"><div class="stat-card" style="border-top:3px solid var(--navy)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Total</div><div style="font-size:26px;font-weight:900;color:var(--navy)">📋 {{ leaves|length }}</div></div></div>
+</div>
+
+<div class="card-srtmu" style="padding:14px 18px;margin-bottom:16px;">
+  <form method="get" class="d-flex gap-2">
+    <select name="status" class="form-select" style="max-width:160px">
+      <option value="">All Status</option>
+      <option {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+      <option {% if status_filter == 'Approved' %}selected{% endif %}>Approved</option>
+      <option {% if status_filter == 'Rejected' %}selected{% endif %}>Rejected</option>
+    </select>
+    <button type="submit" class="btn-navy">🔍 Filter</button>
+    <a href="{% url 'leave_list' %}" class="btn-ghost">✕ Clear</a>
+  </form>
+</div>
+
+<div class="card-srtmu" style="padding:0;overflow:hidden;">
+  <div class="table-responsive">
+    <table class="table-srtmu">
+      <thead><tr><th>Student</th><th>From</th><th>To</th><th>Reason</th><th>Destination</th><th>Certificate</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for l in leaves %}
+        <tr>
+          <td style="font-weight:800">{{ l.student.name }}<div style="font-size:11px;color:var(--muted)">{{ l.student.hostel }} · {{ l.student.room }}</div></td>
+          <td style="font-size:12px">{{ l.from_date }}</td>
+          <td style="font-size:12px">{{ l.to_date }}</td>
+          <td style="font-size:12px;max-width:200px">{{ l.reason|truncatechars:60 }}</td>
+          <td style="font-size:12px">{{ l.destination|default:"—" }}</td>
+          <td>
+            {% if l.certificate %}
+            <a href="{{ l.certificate.url }}" target="_blank"
+               style="display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#16a34a;border:1px solid #86efac;border-radius:7px;padding:4px 10px;font-size:11px;font-weight:800;text-decoration:none;">
+              📎 View
+            </a>
+            {% else %}
+            <span style="color:#ccc;font-size:12px;">No file</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="{% url 'leave_update_status' l.pk %}">
+              {% csrf_token %}
+              <select name="status" class="form-select form-select-sm" style="width:130px" onchange="this.form.submit()">
+                <option {% if l.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option {% if l.status == 'Approved' %}selected{% endif %}>Approved</option>
+                <option {% if l.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+              </select>
+            </form>
+          </td>
+          <td>
+            <form method="post" action="{% url 'leave_delete' l.pk %}" onsubmit="return confirm('Delete?')">
+              {% csrf_token %}<button type="submit" class="btn-danger-srtmu btn-sm">🗑</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">No leave applications.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

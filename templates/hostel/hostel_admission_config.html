@@ -1,0 +1,129 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} — Hostel Admission Configuration{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">⚙️ Hostel Admission Configuration</div>
+    <div style="font-size:13px;color:#64748b;margin-top:4px;">A student is eligible for hostel only when ALL 3 conditions are met:</div>
+    <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">
+      <span style="background:#dbeafe;color:#1d4ed8;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;">① University Admission Receipt</span>
+      <span style="background:#ede9fe;color:#6d28d9;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;">② Hostel Registration Receipt</span>
+      <span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;">③ In Merit List (UG / CET / 12th Marks)</span>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="stat-card"><div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Eligible (All 3 Done)</div><div style="font-size:28px;font-weight:900;color:#1a3a6e;margin-top:4px;">{{ eligible.count }}</div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Approved</div><div style="font-size:28px;font-weight:900;color:#16a34a;margin-top:4px;">{{ approved.count }}</div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Pending Approval</div><div style="font-size:28px;font-weight:900;color:#d97706;margin-top:4px;">{{ pending_approval.count }}</div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Not Eligible</div><div style="font-size:28px;font-weight:900;color:#dc2626;margin-top:4px;">{{ not_eligible_list|length }}</div></div></div>
+</div>
+
+{% if pending_approval %}
+<div class="card-srtmu mb-4">
+  <div style="font-size:14px;font-weight:900;color:#d97706;margin-bottom:14px;">⏳ Pending Approval ({{ pending_approval.count }})</div>
+  <div style="overflow-x:auto;"><table class="table-srtmu">
+    <thead><tr><th>#</th><th>Student Name</th><th>Department</th><th>Hostel</th><th>Univ. Receipt No.</th><th>Hostel Receipt No.</th><th>UG %</th><th>Merit Score</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for s in pending_approval %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td><a href="{% url 'student_detail' s.pk %}" style="font-weight:700;color:#1a3a6e;">{{ s.name }}</a></td>
+      <td style="font-size:12px;">{{ s.school|default:"—" }}</td>
+      <td>{{ s.hostel }}</td>
+      <td><span style="color:#16a34a;font-weight:700;">✅ {{ s.university_receipt_no }}</span></td>
+      <td><span style="color:#16a34a;font-weight:700;">✅ {{ s.hostel_receipt_no }}</span></td>
+      <td><strong>{{ s.marks_ug }}%</strong></td>
+      <td><span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800;">{{ s.merit_score }}%</span></td>
+      <td>
+        <form method="post" action="{% url 'hostel_approve_student' s.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-success-srtmu btn-sm">✅ Approve</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endif %}
+
+{% if approved %}
+<div class="card-srtmu mb-4">
+  <div style="font-size:14px;font-weight:900;color:#16a34a;margin-bottom:14px;">✅ Approved Students ({{ approved.count }})</div>
+  <div style="overflow-x:auto;"><table class="table-srtmu">
+    <thead><tr><th>#</th><th>Student Name</th><th>Department</th><th>Hostel</th><th>Room</th><th>Merit Score</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for s in approved %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td><a href="{% url 'student_detail' s.pk %}" style="font-weight:700;color:#1a3a6e;">{{ s.name }}</a></td>
+      <td style="font-size:12px;">{{ s.school|default:"—" }}</td>
+      <td>{{ s.hostel }}</td>
+      <td>{{ s.room|default:"Not Assigned" }}</td>
+      <td><span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800;">{{ s.merit_score }}%</span></td>
+      <td>
+        <a href="{% url 'hostel_receipt' s.pk %}" class="btn-ghost btn-sm">🖨️ Receipt</a>
+        <form method="post" action="{% url 'hostel_revoke_student' s.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-danger-srtmu btn-sm" onclick="return confirm('Revoke hostel approval for {{ s.name }}?')">✖ Revoke</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endif %}
+
+{% if not_eligible_list %}
+<div class="card-srtmu">
+  <div style="font-size:14px;font-weight:900;color:#dc2626;margin-bottom:14px;">❌ Not Yet Eligible ({{ not_eligible_list|length }}) — Incomplete Conditions</div>
+  <div style="overflow-x:auto;"><table class="table-srtmu">
+    <thead><tr><th>#</th><th>Student Name</th><th>Department</th><th>① Univ. Admission</th><th>② Hostel Registration</th><th>③ UG %</th><th>Missing / Reason</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for item in not_eligible_list %}
+    {% with s=item.student %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td><a href="{% url 'student_detail' s.pk %}" style="font-weight:700;color:#1a3a6e;">{{ s.name }}</a></td>
+      <td style="font-size:12px;">{{ s.school|default:"—" }}</td>
+      <td>
+        {% if s.university_admitted and s.university_receipt_no %}
+          <span style="color:#16a34a;font-weight:800;font-size:12px;">✅ {{ s.university_receipt_no }}</span>
+        {% elif s.university_admitted %}
+          <span style="color:#d97706;font-weight:800;font-size:12px;">⚠️ No Receipt No.</span>
+        {% else %}
+          <span style="color:#dc2626;font-weight:800;font-size:12px;">❌ Not Admitted</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if s.hostel_registered and s.hostel_receipt_no %}
+          <span style="color:#16a34a;font-weight:800;font-size:12px;">✅ {{ s.hostel_receipt_no }}</span>
+        {% elif s.hostel_registered %}
+          <span style="color:#d97706;font-weight:800;font-size:12px;">⚠️ No Receipt No.</span>
+        {% else %}
+          <span style="color:#dc2626;font-weight:800;font-size:12px;">❌ Not Registered</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if s.marks_ug %}
+          <span style="color:#16a34a;font-weight:800;font-size:12px;">✅ {{ s.marks_ug }}%</span>
+        {% else %}
+          <span style="color:#dc2626;font-weight:800;font-size:12px;">❌ Not Entered</span>
+        {% endif %}
+      </td>
+      <td>
+        {% for reason in item.reasons %}
+          <span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;display:inline-block;margin:1px;">{{ reason }}</span>
+        {% endfor %}
+      </td>
+      <td><a href="{% url 'student_edit' s.pk %}" class="btn-ghost btn-sm">✏️ Update</a></td>
+    </tr>
+    {% endwith %}
+    {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endif %}
+{% endblock %}

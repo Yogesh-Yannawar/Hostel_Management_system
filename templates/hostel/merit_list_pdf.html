@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Merit List – SRTMU Hostel</title>
+<style>
+  @media print {
+    .no-print { display: none !important; }
+    body { margin: 0; }
+    @page { margin: 15mm 12mm; }
+  }
+  * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
+  body { background: #fff; color: #1a1a2e; font-size: 12px; }
+
+  /* ── PRINT BUTTON BAR ── */
+  .print-bar {
+    background: #1a3a6e; color: #fff; padding: 10px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .print-bar span { font-size: 13px; font-weight: 700; }
+  .print-bar .btn-group { display: flex; gap: 8px; }
+  .btn-print {
+    background: #c8a96e; color: #1a1a2e; border: none;
+    border-radius: 7px; padding: 8px 20px; font-weight: 800;
+    font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .btn-back {
+    background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 7px; padding: 8px 16px; font-weight: 700;
+    font-size: 13px; cursor: pointer; font-family: inherit; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    text-align: center;
+    padding: 18px 24px 12px;
+    border-bottom: 3px double #1a3a6e;
+  }
+  .univ-logo-row {
+    display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 8px;
+  }
+  .logo-circle {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #1a3a6e; color: #c8a96e;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+  }
+  .univ-name { font-size: 17px; font-weight: 900; color: #1a3a6e; letter-spacing: .3px; }
+  .univ-sub  { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .doc-title {
+    font-size: 16px; font-weight: 900; color: #1a3a6e;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .doc-subtitle { font-size: 11px; color: #64748b; margin-top: 3px; }
+  .doc-meta {
+    display: flex; justify-content: center; gap: 24px; margin-top: 10px; flex-wrap: wrap;
+  }
+  .doc-meta span {
+    background: #f1f5f9; padding: 3px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; color: #334155;
+  }
+
+  /* ── DEPT SECTION ── */
+  .dept-section { margin: 18px 24px 0; break-inside: avoid; }
+  .dept-heading {
+    background: linear-gradient(135deg, #1a3a6e, #0f2348);
+    color: #c8a96e; padding: 7px 16px;
+    border-radius: 7px 7px 0 0; font-size: 13px; font-weight: 900;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .dept-heading .dept-count {
+    background: rgba(200,169,110,.18); padding: 2px 10px;
+    border-radius: 20px; font-size: 11px; color: #fff;
+  }
+
+  /* ── TABLE ── */
+  .merit-table { width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; }
+  .merit-table thead tr { background: #f8fafc; }
+  .merit-table th {
+    padding: 8px 12px; text-align: left;
+    font-size: 10px; font-weight: 900; color: #64748b;
+    text-transform: uppercase; letter-spacing: .5px;
+    border-bottom: 1px solid #e2e8f0; border-right: 1px solid #f1f5f9;
+  }
+  .merit-table td {
+    padding: 7px 12px; border-bottom: 1px solid #f1f5f9;
+    border-right: 1px solid #f8fafc; font-size: 12px;
+    vertical-align: middle;
+  }
+  .merit-table tr:last-child td { border-bottom: none; }
+  .merit-table tr:nth-child(even) td { background: #fafbff; }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    font-weight: 900; font-size: 12px;
+  }
+  .rank-1 { background: #fef3c7; color: #b45309; border: 2px solid #f59e0b; }
+  .rank-2 { background: #f1f5f9; color: #475569; border: 2px solid #94a3b8; }
+  .rank-3 { background: #fff7ed; color: #c2410c; border: 2px solid #f97316; }
+  .rank-other { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+  .score-pill {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 800;
+  }
+  .score-high { background: #dcfce7; color: #16a34a; }
+  .score-mid  { background: #fef9c3; color: #ca8a04; }
+  .score-low  { background: #fee2e2; color: #dc2626; }
+
+  .status-approved { color: #16a34a; font-weight: 800; }
+  .status-pending  { color: #d97706; font-weight: 800; }
+  .status-not      { color: #dc2626; font-weight: 800; }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    margin: 20px 24px 10px; padding-top: 14px;
+    border-top: 2px solid #e2e8f0;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .doc-footer .sign-col { text-align: center; }
+  .sign-line { border-top: 1px solid #334155; width: 160px; margin: 0 auto 4px; padding-top: 4px; }
+  .sign-label { font-size: 11px; color: #64748b; }
+  .doc-footer-note { font-size: 10px; color: #94a3b8; text-align: center; margin: 8px 24px 14px; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box {
+    margin: 14px 24px 0;
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 10px 16px;
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .sum-item { text-align: center; }
+  .sum-val { font-size: 20px; font-weight: 900; color: #1a3a6e; }
+  .sum-lbl { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: .4px; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<!-- PRINT BAR (hidden when printing) -->
+<div class="print-bar no-print">
+  <span>🏆 Merit List — Ready to Print / Save as PDF</span>
+  <div class="btn-group">
+    <a href="{% url 'merit_list' %}" class="btn-back">← Back</a>
+    <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  </div>
+</div>
+
+<!-- DOCUMENT HEADER -->
+<div class="doc-header">
+  <div class="univ-logo-row">
+    <div class="logo-circle">🏛️</div>
+    <div>
+      <div class="univ-name">Swami Ramanand Teerth Marathwada University</div>
+      <div class="univ-sub">Vishnupuri, Nanded – 431 606 (Maharashtra, India)</div>
+    </div>
+  </div>
+  <div class="doc-title">🏆 Hostel Merit List</div>
+  <div class="doc-subtitle">Department-wise Merit Ranking based on UG Graduation Percentage</div>
+  <div class="doc-meta">
+    <span>📅 Date: {{ today|date:"d M Y" }}</span>
+    {% if current_year %}<span>📆 Academic Year: {{ current_year.label }}</span>{% endif %}
+    <span>👥 Total Students: {{ total }}</span>
+    {% if dept_filter %}<span>🏫 Dept: {{ dept_filter }}</span>{% endif %}
+    {% if level_filter %}<span>📚 Level: {{ level_filter }}</span>{% endif %}
+    {% if hostel_filter %}<span>🏠 Hostel: {{ hostel_filter }}</span>{% endif %}
+  </div>
+</div>
+
+<!-- SUMMARY ROW -->
+<div class="summary-box">
+  <div class="sum-item"><div class="sum-val">{{ total }}</div><div class="sum-lbl">Total Students</div></div>
+  <div class="sum-item"><div class="sum-val">{{ dept_groups|length }}</div><div class="sum-lbl">Departments</div></div>
+  <div class="sum-item"><div class="sum-val" style="color:#16a34a;">
+    {{ students_with_score|length }}
+  </div><div class="sum-lbl">Listed</div></div>
+</div>
+
+<!-- DEPT-WISE MERIT TABLES -->
+{% for dept, items in dept_groups.items %}
+<div class="dept-section">
+  <div class="dept-heading">
+    <span>🏫 {{ dept }}</span>
+    <span class="dept-count">{{ items|length }} Student{{ items|length|pluralize }}</span>
+  </div>
+  <table class="merit-table">
+    <thead>
+      <tr>
+        <th style="width:46px;">Rank</th>
+        <th>Student Name</th>
+        <th>Aadhaar</th>
+        <th>Course</th>
+        <th>Year</th>
+        <th>Category</th>
+        <th>12th %</th>
+        <th>CET Obt.</th>
+        <th>CET Total</th>
+        <th>UG %</th>
+        <th>Merit Score</th>
+        <th>Basis</th>
+        <th>Univ. Receipt</th>
+        <th>Hostel Receipt</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      {% with s=item.student sc=item.score rk=item.rank %}
+      <tr>
+        <td>
+          {% if rk == 1 %}<span class="rank-badge rank-1">1</span>
+          {% elif rk == 2 %}<span class="rank-badge rank-2">2</span>
+          {% elif rk == 3 %}<span class="rank-badge rank-3">3</span>
+          {% else %}<span class="rank-badge rank-other">{{ rk }}</span>
+          {% endif %}
+        </td>
+        <td style="font-weight:700;">{{ s.name }}</td>
+        <td style="font-family:monospace;font-size:11px;">{{ s.aadhar }}</td>
+        <td style="font-size:11px;">{{ s.course }}</td>
+        <td style="font-size:11px;">{{ s.year }}</td>
+        <td>
+          <span style="background:#f1f5f9;color:#334155;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:800;">
+            {{ s.category }}
+          </span>
+        </td>
+        <td style="font-size:11px;">{% if s.marks_12 %}{{ s.marks_12 }}%{% else %}—{% endif %}</td>
+        <td style="font-size:11px;">{% if s.cet_marks_obtained %}{{ s.cet_marks_obtained }}{% else %}—{% endif %}</td>
+        <td style="font-size:11px;">{% if s.cet_marks_total %}{{ s.cet_marks_total }}{% else %}—{% endif %}</td>
+        <td style="font-weight:800;">
+          {% if s.marks_ug %}{{ s.marks_ug }}%{% else %}—{% endif %}
+        </td>
+        <td>
+          {% if sc >= 70 %}<span class="score-pill score-high">{{ sc }}%</span>
+          {% elif sc >= 50 %}<span class="score-pill score-mid">{{ sc }}%</span>
+          {% else %}<span class="score-pill score-low">{{ sc }}%</span>
+          {% endif %}
+        </td>
+        <td style="font-size:10px;font-weight:800;">
+          {% if item.basis == 'UG Marks' %}<span style="color:#166534;">UG</span>
+          {% elif item.basis == 'CET Marks' %}<span style="color:#1e40af;">CET</span>
+          {% elif item.basis == '12th Marks' %}<span style="color:#92400e;">12th</span>
+          {% else %}—{% endif %}
+        </td>
+        <td style="font-size:11px;">
+          {% if s.university_receipt_no %}
+            <span style="color:#16a34a;font-weight:700;">{{ s.university_receipt_no }}</span>
+          {% else %}
+            <span style="color:#dc2626;">—</span>
+          {% endif %}
+        </td>
+        <td style="font-size:11px;">
+          {% if s.hostel_receipt_no %}
+            <span style="color:#16a34a;font-weight:700;">{{ s.hostel_receipt_no }}</span>
+          {% else %}
+            <span style="color:#dc2626;">—</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if s.hostel_approved %}
+            <span class="status-approved">✅ Approved</span>
+          {% elif s.university_admitted and s.hostel_registered %}
+            <span class="status-pending">⏳ Pending</span>
+          {% else %}
+            <span class="status-not">❌ Incomplete</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endwith %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% empty %}
+<div style="text-align:center;padding:40px;color:#64748b;font-size:14px;">
+  No students found for the selected filters.
+</div>
+{% endfor %}
+
+<!-- SIGNATURES -->
+<div class="doc-footer">
+  <div class="sign-col">
+    <div class="sign-line"></div>
+    <div class="sign-label">Hostel Warden</div>
+  </div>
+  <div class="sign-col">
+    <div class="sign-line"></div>
+    <div class="sign-label">Hostel Superintendent</div>
+  </div>
+  <div class="sign-col">
+    <div class="sign-line"></div>
+    <div class="sign-label">Registrar, SRTMU Nanded</div>
+  </div>
+</div>
+<div class="doc-footer-note">
+  This merit list is computer-generated from the SRTMU Smart Hostel Management System. 
+  Rankings are based on UG graduation percentage, department-wise. 
+  Generated on {{ today|date:"d M Y" }}.
+</div>
+
+</body>
+</html>

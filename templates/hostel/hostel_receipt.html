@@ -1,0 +1,84 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} — Hostel Registration Receipt{% endblock %}
+{% block content %}
+<div class="page-header d-print-none">
+  <div><div class="page-title">🏠 Hostel Registration Receipt</div></div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'student_detail' student.pk %}" class="btn-ghost">← Back</a>
+    <button onclick="window.print()" class="btn-navy">🖨️ Print</button>
+  </div>
+</div>
+<style>
+@media print { .d-print-none{display:none!important;} body{background:#fff;} .main-wrap{margin:0;} .sidebar{display:none;} .content{padding:0;} }
+.receipt-wrap{max-width:800px;margin:0 auto;background:#fff;border:2px solid #1a3a6e;border-radius:12px;overflow:hidden;}
+.receipt-header{background:linear-gradient(135deg,#1a3a6e,#0f2348);color:#fff;padding:24px 32px;text-align:center;}
+.receipt-header .uni-name{font-size:20px;font-weight:900;letter-spacing:.5px;}
+.receipt-header .sub{font-size:12px;color:rgba(200,169,110,.8);margin-top:4px;}
+.receipt-no{background:#c8a96e;color:#1a3a6e;display:inline-block;padding:4px 16px;border-radius:20px;font-weight:900;font-size:13px;margin-top:10px;}
+.receipt-body{padding:28px 32px;}
+.section-title{font-size:11px;font-weight:900;color:#1a3a6e;text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;border-bottom:2px solid #e2e8f0;padding-bottom:6px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.info-item{display:flex;flex-direction:column;}
+.info-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;}
+.info-value{font-size:14px;font-weight:700;color:#1e293b;margin-top:2px;}
+.receipt-footer{background:#f8fafc;padding:16px 32px;text-align:center;border-top:2px dashed #e2e8f0;font-size:11px;color:#64748b;}
+.stamp-area{display:flex;justify-content:space-between;margin-top:40px;padding-top:16px;border-top:1px solid #e2e8f0;}
+.stamp-box{text-align:center;font-size:11px;color:#64748b;}
+.stamp-line{width:140px;border-top:1px solid #94a3b8;margin:30px auto 6px;}
+.status-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-weight:800;font-size:13px;}
+</style>
+<div class="receipt-wrap">
+  <div class="receipt-header">
+    <div style="font-size:28px;margin-bottom:6px;">🏠</div>
+    <div class="uni-name">SRTMU Boys Hostel — Nanded</div>
+    <div class="sub">Swami Ramanand Teerth Marathwada University</div>
+    <div class="receipt-no">HOSTEL REGISTRATION RECEIPT</div>
+  </div>
+  <div class="receipt-body">
+    <div class="section-title">Registration Details</div>
+    <div class="info-grid">
+      <div class="info-item"><span class="info-label">Hostel Receipt No.</span><span class="info-value">{{ student.hostel_receipt_no|default:"—" }}</span></div>
+      <div class="info-item"><span class="info-label">Registration Date</span><span class="info-value">{{ student.admission_date|date:"d M Y"|default:"—" }}</span></div>
+      <div class="info-item"><span class="info-label">Hostel</span><span class="info-value">{{ student.hostel }}</span></div>
+      <div class="info-item"><span class="info-label">Room Number</span><span class="info-value">{{ student.room|default:"Not Assigned" }}</span></div>
+      <div class="info-item"><span class="info-label">Academic Year</span><span class="info-value">{{ student.academic_year|default:"—" }}</span></div>
+      <div class="info-item">
+        <span class="info-label">Hostel Status</span>
+        <span class="info-value">
+          {% if student.hostel_approved %}<span class="status-badge" style="background:#dcfce7;color:#16a34a;">✅ Approved</span>
+          {% elif student.hostel_registered %}<span class="status-badge" style="background:#fef3c7;color:#d97706;">⏳ Pending Approval</span>
+          {% else %}<span class="status-badge" style="background:#fee2e2;color:#dc2626;">❌ Not Registered</span>{% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="section-title">Student Information</div>
+    <div class="info-grid">
+      <div class="info-item"><span class="info-label">Full Name</span><span class="info-value">{{ student.name }}</span></div>
+      <div class="info-item"><span class="info-label">Aadhaar Number</span><span class="info-value">{{ student.aadhar }}</span></div>
+      <div class="info-item"><span class="info-label">Mobile</span><span class="info-value">{{ student.phone }}</span></div>
+      <div class="info-item"><span class="info-label">Category</span><span class="info-value">{{ student.category }}</span></div>
+      <div class="info-item"><span class="info-label">Course</span><span class="info-value">{{ student.course }} ({{ student.year }})</span></div>
+      <div class="info-item"><span class="info-label">Department</span><span class="info-value">{{ student.school|default:"—" }}</span></div>
+      <div class="info-item"><span class="info-label">Father's Name</span><span class="info-value">{{ student.father_name|default:"—" }}</span></div>
+      <div class="info-item"><span class="info-label">Guardian Phone</span><span class="info-value">{{ student.guardian_phone|default:"—" }}</span></div>
+    </div>
+
+    <div class="section-title">Fee Information</div>
+    <div class="info-grid">
+      <div class="info-item"><span class="info-label">Fee Status</span><span class="info-value">{{ student.fees }}</span></div>
+      <div class="info-item"><span class="info-label">Amount Paid</span><span class="info-value">₹ {{ student.fee_amount }}</span></div>
+      <div class="info-item"><span class="info-label">Payment Date</span><span class="info-value">{{ student.fee_paid_date|date:"d M Y"|default:"—" }}</span></div>
+      <div class="info-item"><span class="info-label">Fee Receipt No.</span><span class="info-value">{{ student.receipt_number|default:"—" }}</span></div>
+    </div>
+
+    <div class="stamp-area">
+      <div class="stamp-box"><div class="stamp-line"></div>Student Signature</div>
+      <div class="stamp-box"><div class="stamp-line"></div>Hostel Warden Seal & Signature</div>
+    </div>
+  </div>
+  <div class="receipt-footer">
+    This receipt is valid only after approval by the Hostel Warden. · SRTMU Boys Hostel Management System
+  </div>
+</div>
+{% endblock %}

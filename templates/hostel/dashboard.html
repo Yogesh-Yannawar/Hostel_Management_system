@@ -1,0 +1,234 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} - Dashboard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">⚡ Dashboard Overview</h1>
+  <a href="{% url 'student_add' %}" class="btn-navy">➕ Add Student</a>
+</div>
+
+<!-- TOP STAT CARDS -->
+<div class="row g-3 mb-4">
+  <div class="col-md-2">
+    <div class="stat-card" style="border-top:3px solid var(--navy);text-align:center;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total Students</div>
+      <div style="font-size:11px;margin-top:6px">👨‍🎓</div>
+      <div style="font-size:30px;font-weight:900;color:var(--navy);line-height:1.1">{{ total_students }}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Registered</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="stat-card" style="border-top:3px solid var(--teal);text-align:center;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Rooms Occupied</div>
+      <div style="font-size:11px;margin-top:6px">🏠</div>
+      <div style="font-size:30px;font-weight:900;color:var(--teal);line-height:1.1">{{ rooms_occupied }}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Out of 212</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="stat-card" style="border-top:3px solid var(--green);text-align:center;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Fee Paid</div>
+      <div style="font-size:11px;margin-top:6px">✅</div>
+      <div style="font-size:30px;font-weight:900;color:var(--green);line-height:1.1">{{ fee_paid }}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Students cleared</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="stat-card" style="border-top:3px solid var(--red);text-align:center;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Fee Pending</div>
+      <div style="font-size:11px;margin-top:6px">⏳</div>
+      <div style="font-size:30px;font-weight:900;color:var(--red);line-height:1.1">{{ fee_pending }}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Due this year</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="stat-card" style="border-top:3px solid var(--orange);text-align:center;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">On Leave</div>
+      <div style="font-size:11px;margin-top:6px">🚪</div>
+      <div style="font-size:30px;font-weight:900;color:var(--orange);line-height:1.1">{{ pending_leaves }}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Currently away</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="stat-card" style="border-top:3px solid #e11d48;text-align:center;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Open Complaints</div>
+      <div style="font-size:11px;margin-top:6px">🔨</div>
+      <div style="font-size:30px;font-weight:900;color:#e11d48;line-height:1.1">{{ open_complaints }}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Need attention</div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <a href="{% url 'hostel_admission_config' %}" style="text-decoration:none;">
+    <div class="stat-card h-100" style="border-left:4px solid #7c3aed;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Hostel Pending</div>
+      <div style="font-size:30px;font-weight:900;color:#7c3aed;line-height:1.1">{{ pending_hostel_approvals }}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">Awaiting approval</div>
+    </div>
+    </a>
+  </div>
+</div>
+
+<!-- HOSTEL INFO + DORMITORY DETAILS + ADMIN STAFF + AMENITIES ROW -->
+<div class="row g-3 mb-4">
+
+  <!-- HOSTEL INFORMATION -->
+  <div class="col-md-3">
+    <div class="card-srtmu h-100">
+      <h3 style="font-size:13px;font-weight:900;color:var(--navy);margin-bottom:14px">🏛️ Hostel Information</h3>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted);width:50%">Established</td><td style="font-weight:700">2001</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">Total Rooms</td><td style="font-weight:700">212</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">Student Capacity</td><td style="font-weight:700">342</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">Annual Fee</td><td style="font-weight:700;font-size:11px">₹3200 + ₹500 Deposit</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">Water</td><td style="font-weight:700;font-size:11px">RO Filtered (5 RO Plants)</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">Internet</td><td style="font-weight:700">Wi-Fi Enabled</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">Sports</td><td style="font-weight:700;font-size:11px">Carrom, Chess, Volleyball, Badminton</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">TV Sets</td><td style="font-weight:700">2 in Rec. Halls</td></tr>
+        <tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 0;color:var(--muted)">Security</td><td style="font-weight:700">01 Security Room</td></tr>
+        <tr><td style="padding:5px 0;color:var(--muted)">Parking</td><td style="font-weight:700">Available</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- DORMITORY DETAILS -->
+  <div class="col-md-3">
+    <div class="card-srtmu h-100">
+      <h3 style="font-size:13px;font-weight:900;color:var(--navy);margin-bottom:14px">🏢 Dormitory Details</h3>
+      <div style="margin-bottom:8px;padding:8px 10px;background:#f0f4ff;border-radius:8px;border-left:3px solid var(--navy)">
+        <div style="font-size:12px;font-weight:800;color:var(--navy)">Dormitory 1</div>
+        <div style="font-size:11px;color:var(--muted)">Area: 2635 sq.m · Room: 88 sq.ft · 100 rooms</div>
+      </div>
+      <div style="margin-bottom:8px;padding:8px 10px;background:#f0fbff;border-radius:8px;border-left:3px solid var(--teal)">
+        <div style="font-size:12px;font-weight:800;color:var(--teal)">Dormitory 2</div>
+        <div style="font-size:11px;color:var(--muted)">Area: 1377 sq.m · Room: 156 sq.ft · 62 rooms</div>
+      </div>
+      <div style="margin-bottom:8px;padding:8px 10px;background:#faf5ff;border-radius:8px;border-left:3px solid #7c3aed">
+        <div style="font-size:12px;font-weight:800;color:#7c3aed">Dormitory 3</div>
+        <div style="font-size:11px;color:var(--muted)">Area: 1274 sq.m · Room: 140 sq.ft · 50 rooms</div>
+      </div>
+      <div style="margin-bottom:8px;padding:8px 10px;background:#fff7f0;border-radius:8px;border-left:3px solid var(--orange)">
+        <div style="font-size:12px;font-weight:800;color:var(--orange)">Entertainment Hall — Hostel 1</div>
+        <div style="font-size:11px;color:var(--muted)">1200 sq.ft Entertainment Hall</div>
+      </div>
+      <div style="padding:8px 10px;background:#fff7f0;border-radius:8px;border-left:3px solid var(--orange)">
+        <div style="font-size:12px;font-weight:800;color:var(--orange)">Entertainment Hall — Hostel 3</div>
+        <div style="font-size:11px;color:var(--muted)">312 sq.ft Entertainment Hall</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMINISTRATIVE STAFF -->
+  <div class="col-md-3">
+    <div class="card-srtmu h-100">
+      <h3 style="font-size:13px;font-weight:900;color:var(--navy);margin-bottom:14px">👨‍💼 Administrative Staff</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9">
+        <span style="font-size:12px;font-weight:600">Rector</span>
+        <span style="background:#1a3a6e22;color:var(--navy);font-size:12px;font-weight:900;padding:2px 12px;border-radius:20px;">01</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9">
+        <span style="font-size:12px;font-weight:600">Wardens</span>
+        <span style="background:#0891b222;color:var(--teal);font-size:12px;font-weight:900;padding:2px 12px;border-radius:20px;">04</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9">
+        <span style="font-size:12px;font-weight:600">Superintendent</span>
+        <span style="background:#16a34a22;color:var(--green);font-size:12px;font-weight:900;padding:2px 12px;border-radius:20px;">01</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9">
+        <span style="font-size:12px;font-weight:600">Junior Clerk</span>
+        <span style="background:#f9731622;color:var(--orange);font-size:12px;font-weight:900;padding:2px 12px;border-radius:20px;">01</span>
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:#f0f4ff;border-radius:8px;font-size:11px;color:var(--muted)">
+        🖥️ 1 Computer + 1 Printer + Scanner in hostel office
+      </div>
+      <div style="margin-top:8px;padding:8px 10px;background:#f0fdf4;border-radius:8px;font-size:11px;color:#15803d">
+        📰 Lokmat, Sakal, Times of India, Maharashtra Times, Loksatta (3 copies each)
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOM AMENITIES -->
+  <div class="col-md-3">
+    <div class="card-srtmu h-100">
+      <h3 style="font-size:13px;font-weight:900;color:var(--navy);margin-bottom:14px">🛏️ Room Amenities</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Bed</span>
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Chair</span>
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Table</span>
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Cupboard</span>
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Tube Light</span>
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Fan</span>
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Dustbin</span>
+        <span style="background:#f0f4ff;color:var(--navy);border:1px solid #c7d5f5;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Doormat</span>
+      </div>
+      <div style="padding:8px 10px;background:#fef9c3;border-radius:8px;border-left:3px solid #ca8a04;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:800;color:#92400e">🍽️ Mess Facilities</div>
+        <div style="font-size:11px;color:var(--muted)">Dining Hall (1200 sq.ft), Kitchen & Storeroom</div>
+      </div>
+      <div style="padding:8px 10px;background:#f0fdf4;border-radius:8px;border-left:3px solid var(--green);margin-bottom:8px">
+        <div style="font-size:11px;font-weight:800;color:#15803d">🌿 Garden & Grounds</div>
+        <div style="font-size:11px;color:var(--muted)">Well-organised garden, parking shade available</div>
+      </div>
+      <div style="padding:8px 10px;background:#fce7f3;border-radius:8px;border-left:3px solid #9d174d">
+        <div style="font-size:11px;font-weight:800;color:#9d174d">🏥 Health Center</div>
+        <div style="font-size:11px;color:var(--muted)">On-campus health center available</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOSTEL SUMMARY + RECENT STUDENTS -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card-srtmu">
+      <h3 style="font-size:15px;font-weight:900;color:var(--navy);margin-bottom:16px">🏢 Hostel Summary</h3>
+      <div class="table-responsive">
+        <table class="table-srtmu">
+          <thead><tr><th>Hostel</th><th>Students</th><th>Fee Paid</th><th>Pending</th><th>Collected</th></tr></thead>
+          <tbody>
+            {% for h in hostel_stats %}
+            <tr>
+              <td style="font-weight:800">{{ h.name }}</td>
+              <td>{{ h.total }}</td>
+              <td><span style="color:var(--green);font-weight:800">{{ h.paid }}</span></td>
+              <td><span style="color:var(--red);font-weight:800">{{ h.pending }}</span></td>
+              <td style="font-weight:800">₹{{ h.collected }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card-srtmu">
+      <h3 style="font-size:15px;font-weight:900;color:var(--navy);margin-bottom:16px">👨‍🎓 Recent Students</h3>
+      {% for s in recent_students %}
+      <div class="d-flex align-items-center gap-3 mb-2 p-2" style="background:#f8fafc;border-radius:8px;">
+        <div style="font-size:28px">👤</div>
+        <div style="flex:1">
+          <div style="font-weight:800;font-size:13px">{{ s.name }}</div>
+          <div style="font-size:11px;color:var(--muted)">{{ s.course }} · {{ s.year }} · {{ s.hostel }} · {{ s.room }}</div>
+        </div>
+        <span class="badge-srtmu badge-{{ s.fees }}">{{ s.fees }}</span>
+      </div>
+      {% empty %}<div style="color:var(--muted);text-align:center;padding:20px">No students yet</div>{% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- RECENT COMPLAINTS -->
+<div class="card-srtmu">
+  <h3 style="font-size:15px;font-weight:900;color:var(--navy);margin-bottom:16px">🔨 Recent Complaints</h3>
+  {% for c in recent_complaints %}
+  <div class="d-flex align-items-center gap-3 mb-2 p-2" style="background:#fff7ed;border-radius:8px;border:1px solid #fed7aa;">
+    <div style="flex:1">
+      <div style="font-weight:800;font-size:13px">{{ c.title }}</div>
+      <div style="font-size:11px;color:var(--muted)">{{ c.student_name }} · {{ c.room }}{% if c.damage_amount %} · ₹{{ c.damage_amount }}{% endif %}</div>
+    </div>
+    <span class="badge-srtmu badge-{{ c.priority }}">{{ c.priority }}</span>
+    <span class="badge-srtmu badge-{{ c.status }}">{{ c.status }}</span>
+  </div>
+  {% empty %}<div style="color:var(--muted);text-align:center;padding:20px">No complaints</div>{% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} — Merit List{% endblock %}
+{% block content %}
+<div class="page-header d-print-none">
+  <div><div class="page-title">🏆 Merit List — Department Wise</div>
+    <div style="font-size:13px;color:#64748b;">Ranked by: UG % (if completed) → CET % (if appeared) → 12th % (fresh UG applicants)</div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'merit_list_pdf' %}?department={{ dept_filter }}&hostel={{ hostel_filter }}&academic_year={{ year_filter }}&level={{ level_filter }}" class="btn-navy" target="_blank">📄 Export PDF</a>
+    <button onclick="window.print()" class="btn-ghost">🖨️ Print</button>
+  </div>
+</div>
+<style>
+@media print { .d-print-none{display:none!important;} .main-wrap{margin:0;} .sidebar{display:none;} .content{padding:0;} }
+.rank-1{background:#fef9c3;} .rank-2{background:#f1f5f9;} .rank-3{background:#fff7ed;}
+.basis-ug{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;}
+.basis-cet{background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;}
+.basis-12{background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;}
+</style>
+
+<div class="card-srtmu d-print-none mb-4">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-3">
+      <label style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;">Department</label>
+      <select name="department" class="form-select form-select-sm">
+        <option value="">All Departments</option>
+        {% for k,v in departments %}<option value="{{ k }}" {% if dept_filter == k %}selected{% endif %}>{{ v }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;">Hostel</label>
+      <select name="hostel" class="form-select form-select-sm">
+        <option value="">All Hostels</option>
+        {% for h in hostels %}<option value="{{ h }}" {% if hostel_filter == h %}selected{% endif %}>{{ h }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;">Level</label>
+      <select name="level" class="form-select form-select-sm">
+        <option value="">All</option>
+        <option value="UG" {% if level_filter == "UG" %}selected{% endif %}>UG</option>
+        <option value="PG" {% if level_filter == "PG" %}selected{% endif %}>PG</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;">Academic Year</label>
+      <select name="academic_year" class="form-select form-select-sm">
+        <option value="">All Years</option>
+        {% for yr in all_years %}<option value="{{ yr.pk }}" {% if year_filter == yr.pk|stringformat:"s" %}selected{% endif %}>{{ yr.label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-1"><button type="submit" class="btn-navy btn-sm w-100">Filter</button></div>
+    <div class="col-md-1"><a href="{% url 'merit_list' %}" class="btn-ghost btn-sm w-100">Reset</a></div>
+  </form>
+</div>
+
+<!-- Legend -->
+<div class="d-print-none mb-3" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+  <span style="font-size:12px;font-weight:700;color:#64748b;">Merit Basis:</span>
+  <span class="basis-ug">UG Marks</span> <span style="font-size:11px;color:#64748b;">Student completed UG</span>
+  <span class="basis-cet">CET Marks</span> <span style="font-size:11px;color:#64748b;">Appeared in CET exam</span>
+  <span class="basis-12">12th Marks</span> <span style="font-size:11px;color:#64748b;">Fresh after 12th (UG admission)</span>
+</div>
+
+{% if not dept_groups %}
+<div class="card-srtmu" style="text-align:center;padding:48px;color:#94a3b8;"><div style="font-size:40px;">📋</div><div style="font-weight:800;margin-top:8px;">No students in merit list.</div><div style="font-size:13px;">Add UG marks, CET marks, or 12th marks to student records to generate merit list.</div></div>
+{% endif %}
+
+{% for dept, items in dept_groups.items %}
+<div class="card-srtmu mb-4">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div>
+      <div style="font-size:14px;font-weight:900;color:#1a3a6e;">🏫 {{ dept }}</div>
+      <div style="font-size:12px;color:#64748b;">{{ items|length }} student(s) ranked</div>
+    </div>
+    <div style="background:#f0f4ff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:800;color:#1a3a6e;">Total: {{ items|length }}</div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table-srtmu">
+      <thead><tr><th>Rank</th><th>Student Name</th><th>Course</th><th>Year</th><th>12th %</th><th>CET Obtained</th><th>CET Total</th><th>UG %</th><th>Merit Score</th><th>Basis</th><th>Hostel</th><th>Room</th></tr></thead>
+      <tbody>
+      {% for item in items %}
+      <tr class="{% if item.rank == 1 %}rank-1{% elif item.rank == 2 %}rank-2{% elif item.rank == 3 %}rank-3{% endif %}">
+        <td style="font-weight:900;font-size:16px;color:{% if item.rank == 1 %}#ca8a04{% elif item.rank == 2 %}#475569{% elif item.rank == 3 %}#c2410c{% else %}#1a3a6e{% endif %};">
+          {% if item.rank == 1 %}🥇{% elif item.rank == 2 %}🥈{% elif item.rank == 3 %}🥉{% else %}{{ item.rank }}{% endif %}
+        </td>
+        <td><a href="{% url 'student_detail' item.student.pk %}" style="font-weight:700;color:#1a3a6e;">{{ item.student.name }}</a><br><span style="font-size:11px;color:#64748b;">{{ item.student.category }}</span></td>
+        <td style="font-size:12px;">{{ item.student.course }}</td>
+        <td>{{ item.student.year }}</td>
+        <td>{{ item.student.marks_12|default:"—" }}</td>
+        <td>{{ item.student.cet_marks_obtained|default:"—" }}</td>
+        <td>{{ item.student.cet_marks_total|default:"—" }}</td>
+        <td>{{ item.student.marks_ug|default:"—" }}</td>
+        <td><strong style="color:#1a3a6e;font-size:15px;">{{ item.score }}%</strong></td>
+        <td>
+          {% if item.basis == 'UG Marks' %}<span class="basis-ug">UG Marks</span>
+          {% elif item.basis == 'CET Marks' %}<span class="basis-cet">CET Marks</span>
+          {% elif item.basis == '12th Marks' %}<span class="basis-12">12th Marks</span>
+          {% else %}<span style="color:#94a3b8;">—</span>{% endif %}
+        </td>
+        <td style="font-size:12px;">{{ item.student.hostel }}</td>
+        <td>{{ item.student.room|default:"—" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

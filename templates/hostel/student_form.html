@@ -1,0 +1,213 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} - {{ title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">{% if student %}✏️{% else %}➕{% endif %} {{ title }}</h1>
+  <a href="{% url 'student_list' %}" class="btn-ghost">← Back</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div class="form-section">
+  <div class="form-section-title">📸 Student Photo</div>
+  {% if student and student.photo %}
+  <div class="mb-3"><img src="{{ student.photo.url }}" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid var(--border)"/></div>
+  {% endif %}
+  <div class="mb-3">{{ form.photo.label_tag }} {{ form.photo }}</div>
+</div>
+
+<div class="form-section">
+  <div class="form-section-title">👤 Personal Information</div>
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label fw-bold">Full Name *</label>{{ form.name }}{% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-6"><label class="form-label fw-bold">Aadhaar Number * (12 digits)</label>{{ form.aadhar }}{% if form.aadhar.errors %}<div class="text-danger small mt-1">{{ form.aadhar.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-4"><label class="form-label fw-bold">Gender *</label>{{ form.gender }}</div>
+    <div class="col-md-4"><label class="form-label fw-bold">Category *</label>{{ form.category }}{% if form.category.errors %}<div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-4"><label class="form-label fw-bold">Biometric ID</label>{{ form.biometric_id }}</div>
+    <div class="col-md-6"><label class="form-label fw-bold">Mobile Number *</label>{{ form.phone }}{% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-6"><label class="form-label fw-bold">Email</label>{{ form.email }}</div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-section-title">👨‍👩‍👦 Guardian Information</div>
+  <div class="row g-3">
+    <div class="col-md-4"><label class="form-label fw-bold">Father's Name</label>{{ form.father_name }}{% if form.father_name.errors %}<div class="text-danger small mt-1">{{ form.father_name.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-4"><label class="form-label fw-bold">Mother's Name</label>{{ form.mother_name }}{% if form.mother_name.errors %}<div class="text-danger small mt-1">{{ form.mother_name.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-4"><label class="form-label fw-bold">Guardian Mobile</label>{{ form.guardian_phone }}{% if form.guardian_phone.errors %}<div class="text-danger small mt-1">{{ form.guardian_phone.errors.0 }}</div>{% endif %}</div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-section-title">🎓 Academic Information</div>
+  <div class="row g-3">
+    <div class="col-md-4"><label class="form-label fw-bold">Education Level *</label>{{ form.level }}</div>
+    <div class="col-md-8"><label class="form-label fw-bold">School / Department *</label>{{ form.school }}</div>
+    <div class="col-md-6">
+      <label class="form-label fw-bold">Course * <small style="font-weight:400;color:#888">(select from list or type manually)</small></label>
+      {{ form.course }}
+      <datalist id="course-datalist">
+        {% for val, label in course_choices %}<option value="{{ val }}">{% endfor %}
+      </datalist>
+      {% if form.course.errors %}<div class="text-danger small mt-1">{{ form.course.errors.0 }}</div>{% endif %}
+    </div>
+    <div class="col-md-6"><label class="form-label fw-bold">Year of Study *</label>{{ form.year }}</div>
+
+    <div class="col-md-3"><label class="form-label fw-bold">10th Marks (%)</label>{{ form.marks_10 }}{% if form.marks_10.errors %}<div class="text-danger small mt-1">{{ form.marks_10.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-3"><label class="form-label fw-bold">12th Marks (%)</label>{{ form.marks_12 }}{% if form.marks_12.errors %}<div class="text-danger small mt-1">{{ form.marks_12.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-3">
+      <label class="form-label fw-bold">CET Marks Obtained <small style="font-weight:400;color:#0891b2;">if appeared</small></label>
+      {{ form.cet_marks_obtained }}{% if form.cet_marks_obtained.errors %}<div class="text-danger small mt-1">{{ form.cet_marks_obtained.errors.0 }}</div>{% endif %}
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-bold">CET Total Marks <small style="font-weight:400;color:#0891b2;">if appeared</small></label>
+      {{ form.cet_marks_total }}{% if form.cet_marks_total.errors %}<div class="text-danger small mt-1">{{ form.cet_marks_total.errors.0 }}</div>{% endif %}
+    </div>
+    <div class="col-md-3"><label class="form-label fw-bold">UG Marks (%) <small style="font-weight:400;color:#888">if UG completed</small></label>{{ form.marks_ug }}{% if form.marks_ug.errors %}<div class="text-danger small mt-1">{{ form.marks_ug.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-3"><label class="form-label fw-bold">PG Marks (%) <small style="font-weight:400;color:#888">if applicable</small></label>{{ form.marks_pg }}{% if form.marks_pg.errors %}<div class="text-danger small mt-1">{{ form.marks_pg.errors.0 }}</div>{% endif %}</div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-section-title">📅 Academic & Fee Details</div>
+  <div class="row g-3">
+    <div class="col-md-4"><label class="form-label fw-bold">📅 Academic Year *</label>{{ form.academic_year }}<div style="font-size:11px;color:var(--muted);margin-top:4px;">e.g. 2025-2026</div></div>
+    <div class="col-md-4"><label class="form-label fw-bold">District / City *</label>{{ form.district }}</div>
+    <div class="col-md-4"><label class="form-label fw-bold">Fee Status</label>{{ form.fees }}</div>
+    <div class="col-md-2"><label class="form-label fw-bold">Amount Paid (₹)</label>{{ form.fee_amount }}</div>
+    <div class="col-md-2"><label class="form-label fw-bold">Fee Paid Date</label>{{ form.fee_paid_date }}</div>
+    <div class="col-md-4"><label class="form-label fw-bold">Fee Receipt Number</label>{{ form.receipt_number }}</div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-section-title">📍 Address</div>
+  <div class="row g-3">
+    <div class="col-12"><label class="form-label fw-bold">Full Address</label>{{ form.address }}</div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-section-title">🏛️ Verified Receipt Numbers</div>
+  {% if verified_hostel_reg_no or verified_admission_reg_no %}
+  <!-- Hidden fields to carry verified numbers through POST -->
+  <input type="hidden" name="verified_hostel_reg_no" value="{{ verified_hostel_reg_no }}">
+  <input type="hidden" name="verified_admission_reg_no" value="{{ verified_admission_reg_no }}">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:800;color:#15803d;text-transform:uppercase;margin-bottom:4px;">✅ University Admission Receipt</div>
+        <div style="font-size:15px;font-weight:900;color:#166534;font-family:monospace;">{{ verified_admission_reg_no }}</div>
+        <div style="font-size:11px;color:#4ade80;margin-top:4px;">Verified — University Admitted</div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:800;color:#15803d;text-transform:uppercase;margin-bottom:4px;">✅ Hostel Registration Receipt</div>
+        <div style="font-size:15px;font-weight:900;color:#166534;font-family:monospace;">{{ verified_hostel_reg_no }}</div>
+        <div style="font-size:11px;color:#4ade80;margin-top:4px;">Verified — Hostel Registered</div>
+      </div>
+    </div>
+    <div class="col-md-4"><label class="form-label fw-bold">Admission Date (optional)</label>{{ form.admission_date }}</div>
+  </div>
+  {% else %}
+  <!-- Edit mode: show editable receipt fields -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label style="font-size:12px;color:#64748b;font-weight:600;">University Receipt No. <span style="color:#dc2626;font-weight:900;">*</span></label>
+      {{ form.university_receipt_no }}
+      {% if form.university_receipt_no.errors %}<div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ form.university_receipt_no.errors.0 }}</div>{% endif %}
+    </div>
+    <div class="col-md-6">
+      <label style="font-size:12px;color:#64748b;font-weight:600;">Hostel Receipt No. <span style="color:#dc2626;font-weight:900;">*</span></label>
+      {{ form.hostel_receipt_no }}
+      {% if form.hostel_receipt_no.errors %}<div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ form.hostel_receipt_no.errors.0 }}</div>{% endif %}
+    </div>
+    <div class="col-md-4"><label class="form-label fw-bold">Admission Date</label>{{ form.admission_date }}</div>
+    <div class="col-md-4">
+      <div class="d-flex align-items-center gap-2 mt-4">{{ form.university_admitted }}<label style="font-weight:700;font-size:13px;">University Admission Confirmed</label></div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex align-items-center gap-2 mt-4">{{ form.hostel_registered }}<label style="font-weight:700;font-size:13px;">Hostel Registration Done</label></div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% if is_edit and hostel_form %}
+<div class="form-section">
+  <div class="form-section-title">🏠 Hostel & Room Information</div>
+  <div style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#92400e;font-weight:600;">
+    ℹ️ Room allocation is also available from the <a href="{% url 'room_allocation' %}" style="color:#1a3a6e;">Room Allocation page</a>.
+  </div>
+  <div class="row g-3">
+    <div class="col-md-4"><label class="form-label fw-bold">Hostel *</label>{{ hostel_form.hostel }}{% if hostel_form.hostel.errors %}<div class="text-danger small mt-1">{{ hostel_form.hostel.errors.0 }}</div>{% endif %}</div>
+    <div class="col-md-4">
+      <label class="form-label fw-bold">Room Number</label>
+      <input type="text" name="room" id="id_room" list="room-datalist" value="{{ hostel_form.room.value|default:'' }}" class="form-control" placeholder="Select hostel first, then pick room" autocomplete="off"/>
+      <datalist id="room-datalist"></datalist>
+      <div id="room-hint" style="font-size:11px;color:#888;margin-top:4px;"></div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex align-items-center gap-2 mb-2 mt-4">{{ hostel_form.hostel_registered }}<label style="font-weight:700;font-size:13px;">Hostel Registration Done</label></div>
+    </div>
+    <div class="col-md-6">
+      <label style="font-size:12px;color:#64748b;font-weight:600;">Hostel Receipt No. <span style="color:#dc2626;font-weight:900;">*</span></label>
+      {{ hostel_form.hostel_receipt_no }}
+      {% if hostel_form.hostel_receipt_no.errors %}<div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ hostel_form.hostel_receipt_no.errors.0 }}</div>{% endif %}
+    </div>
+  </div>
+</div>
+{% elif not is_edit %}
+<div class="form-section" style="background:#e0f2fe;border:1.5px solid #7dd3fc;">
+  <div class="form-section-title" style="color:#0369a1;">🏠 Room Allocation — After Saving</div>
+  <p style="font-size:13px;color:#0c4a6e;margin:0;">After saving this student, go to the <a href="{% url 'room_allocation' %}" style="color:#1a3a6e;font-weight:800;">Room Allocation page</a> to assign a hostel and room. The student must first be approved in the <a href="{% url 'hostel_admission_config' %}" style="color:#1a3a6e;font-weight:800;">Hostel Admission page</a>.</p>
+</div>
+{% endif %}
+
+<div class="form-section">
+  <div class="form-section-title">📝 Remarks</div>
+  {{ form.remarks }}
+</div>
+
+{% if form.errors %}
+<div class="alert-srtmu alert-error-srtmu">
+  ❌ Please fix the following errors:
+  {% for field, errors in form.errors.items %}{% for error in errors %}<div>• {{ field }}: {{ error }}</div>{% endfor %}{% endfor %}
+  {% if hostel_form %}{% for field, errors in hostel_form.errors.items %}{% for error in errors %}<div>• Hostel — {{ field }}: {{ error }}</div>{% endfor %}{% endfor %}{% endif %}
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-end gap-2">
+  <a href="{% url 'student_list' %}" class="btn-ghost">Cancel</a>
+  <button type="submit" name="{% if verified_hostel_reg_no %}save_student{% else %}update_student{% endif %}" value="1" class="btn-navy">💾 {% if is_edit %}Update Student{% else %}Save Student →{% endif %}</button>
+</div>
+</form>
+
+<script>
+var HOSTEL_ROOMS = {
+  'Boys Hostel 1': {g:{start:1,end:60,pad:2},f:{start:1,end:60,pad:3}},
+  'Boys Hostel 2': {g:{start:61,end:90,pad:2},f:{start:61,end:90,pad:3}},
+  'Boys Hostel 3': {g:{start:1,end:14,pad:2},f:{start:101,end:119,pad:3}},
+  'Boys Hostel 4': {g:{start:1,end:12,pad:2},f:{start:1,end:12,pad:3}}
+};
+function pad(n,len){return String(n).padStart(len,'0');}
+function updateRoomList(hostel){
+  var dl=document.getElementById('room-datalist');
+  var hint=document.getElementById('room-hint');
+  if(!dl)return;
+  dl.innerHTML='';
+  if(!hostel||!HOSTEL_ROOMS[hostel]){if(hint)hint.textContent='Please select a hostel first.';return;}
+  var cfg=HOSTEL_ROOMS[hostel],rooms=[];
+  for(var i=cfg.g.start;i<=cfg.g.end;i++)rooms.push('G-'+pad(i,cfg.g.pad));
+  for(var i=cfg.f.start;i<=cfg.f.end;i++)rooms.push('F-'+pad(i,cfg.f.pad));
+  rooms.forEach(function(r){var o=document.createElement('option');o.value=r;dl.appendChild(o);});
+  if(hint)hint.textContent=hostel+': Ground G-'+pad(cfg.g.start,cfg.g.pad)+' to G-'+pad(cfg.g.end,cfg.g.pad)+' | First F-'+pad(cfg.f.start,cfg.f.pad)+' to F-'+pad(cfg.f.end,cfg.f.pad);
+  var rv=document.getElementById('id_room');
+  if(rv&&rv.value&&rooms.indexOf(rv.value)===-1)rv.value='';
+}
+var hs=document.getElementById('id_hostel');
+if(hs){updateRoomList(hs.value);hs.addEventListener('change',function(){updateRoomList(this.value);});}
+</script>
+{% endblock %}

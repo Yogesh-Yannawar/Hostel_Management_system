@@ -1,0 +1,20 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} - Confirm Delete{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">🗑 Confirm Delete</h1>
+</div>
+<div class="card-srtmu" style="max-width:500px;">
+  <div style="text-align:center;padding:20px 0;">
+    <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+    <h3 style="font-size:18px;font-weight:900;color:var(--navy);margin-bottom:8px;">Delete {{ type }}?</h3>
+    <p style="color:var(--muted);margin-bottom:24px;">Are you sure you want to delete <strong>{{ obj }}</strong>? This action cannot be undone.</p>
+    <div class="d-flex gap-3 justify-content-center">
+      <a href="javascript:history.back()" class="btn-ghost">← Cancel</a>
+      <form method="post">{% csrf_token %}
+        <button type="submit" class="btn-danger-srtmu">🗑 Yes, Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

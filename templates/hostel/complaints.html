@@ -1,0 +1,72 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} - Complaints{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">🔨 Damage Complaints</h1>
+  <a href="{% url 'complaint_add' %}" class="btn-navy">➕ File Complaint</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="stat-card" style="border-top:3px solid var(--navy)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Total</div><div style="font-size:26px;font-weight:900;color:var(--navy)">📋 {{ total_complaints }}</div></div></div>
+  <div class="col-md-3"><div class="stat-card" style="border-top:3px solid var(--red)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Open</div><div style="font-size:26px;font-weight:900;color:var(--red)">🔴 {{ open_count }}</div></div></div>
+  <div class="col-md-3"><div class="stat-card" style="border-top:3px solid var(--orange)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Total Damage</div><div style="font-size:26px;font-weight:900;color:var(--orange)">💸 ₹{{ total_dmg }}</div></div></div>
+  <div class="col-md-3"><div class="stat-card" style="border-top:3px solid var(--red)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Pending Recovery</div><div style="font-size:26px;font-weight:900;color:var(--red)">⚠️ ₹{{ pending_dmg }}</div></div></div>
+</div>
+
+<div class="card-srtmu" style="padding:14px 18px;margin-bottom:16px;">
+  <form method="get" class="d-flex gap-2 flex-wrap">
+    <input name="q" value="{{ q }}" placeholder="🔍 Search complaint…" class="form-control" style="max-width:260px"/>
+    <select name="status" class="form-select" style="max-width:160px">
+      <option value="">All Status</option>
+      <option {% if status_filter == 'Open' %}selected{% endif %}>Open</option>
+      <option {% if status_filter == 'In Progress' %}selected{% endif %}>In Progress</option>
+      <option {% if status_filter == 'Resolved' %}selected{% endif %}>Resolved</option>
+    </select>
+    <button type="submit" class="btn-navy">🔍 Filter</button>
+    <a href="{% url 'complaint_list' %}" class="btn-ghost">✕ Clear</a>
+  </form>
+</div>
+
+<div class="card-srtmu" style="padding:0;overflow:hidden;">
+  <div class="table-responsive">
+    <table class="table-srtmu">
+      <thead><tr><th>Complaint</th><th>Student</th><th>Room</th><th>Damage</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for c in complaints %}
+        <tr>
+          <td>
+            <div style="font-weight:800;font-size:13px">{{ c.title }}</div>
+            <div style="font-size:11px;color:var(--muted)">{{ c.complaint_type }} · {{ c.damage_date|default:"—" }}</div>
+          </td>
+          <td style="font-size:12px;font-weight:700">{{ c.student_name }}</td>
+          <td>
+            <div style="font-size:12px">{{ c.hostel }}</div>
+            {% if c.room %}<span style="background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700">{{ c.room }}</span>{% endif %}
+          </td>
+          <td style="font-weight:800;color:var(--red)">₹{{ c.damage_amount }}</td>
+          <td><span class="badge-srtmu badge-{{ c.priority }}">{{ c.priority }}</span></td>
+          <td>
+            <form method="post" action="{% url 'update_complaint_status' c.pk %}">
+              {% csrf_token %}
+              <select name="status" class="form-select form-select-sm" style="width:130px" onchange="this.form.submit()">
+                <option {% if c.status == 'Open' %}selected{% endif %}>Open</option>
+                <option {% if c.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option {% if c.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+              </select>
+            </form>
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'complaint_edit' c.pk %}" class="btn-navy btn-sm">✏️</a>
+              <a href="{% url 'complaint_delete' c.pk %}" class="btn-danger-srtmu btn-sm">🗑</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">No complaints found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

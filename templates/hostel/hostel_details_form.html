@@ -1,0 +1,126 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} — Hostel Details{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">🏠 Hostel Details</h1>
+    <div style="font-size:13px;color:#64748b;">Student: <strong>{{ student.name }}</strong> &nbsp;|&nbsp; {{ student.course }} — {{ student.year }}</div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'student_detail' student.pk %}" class="btn-ghost">← Back to Student</a>
+  </div>
+</div>
+
+<!-- 3-condition status panel -->
+<div class="card-srtmu mb-4">
+  <div style="font-weight:800;color:#1a3a6e;font-size:14px;margin-bottom:12px;">✅ Room Allocation Eligibility Checklist</div>
+  <div class="row g-2">
+    <div class="col-md-4">
+      <div style="padding:12px 14px;border-radius:10px;background:{% if student.university_admitted and student.university_receipt_no %}#dcfce7{% else %}#fee2e2{% endif %};border:1.5px solid {% if student.university_admitted and student.university_receipt_no %}#16a34a{% else %}#dc2626{% endif %};">
+        <div style="font-weight:800;font-size:13px;color:{% if student.university_admitted and student.university_receipt_no %}#166534{% else %}#991b1b{% endif %};">
+          {% if student.university_admitted and student.university_receipt_no %}✅{% else %}❌{% endif %}
+          ① Admission Receipt
+        </div>
+        <div style="font-size:11px;margin-top:4px;color:#64748b;">
+          {% if student.university_receipt_no %}Receipt: {{ student.university_receipt_no }}{% else %}Not filled yet{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div style="padding:12px 14px;border-radius:10px;background:{% if student.hostel_registered and student.hostel_receipt_no %}#dcfce7{% else %}#fee2e2{% endif %};border:1.5px solid {% if student.hostel_registered and student.hostel_receipt_no %}#16a34a{% else %}#dc2626{% endif %};">
+        <div style="font-weight:800;font-size:13px;color:{% if student.hostel_registered and student.hostel_receipt_no %}#166534{% else %}#991b1b{% endif %};">
+          {% if student.hostel_registered and student.hostel_receipt_no %}✅{% else %}❌{% endif %}
+          ② Hostel Receipt
+        </div>
+        <div style="font-size:11px;margin-top:4px;color:#64748b;">
+          {% if student.hostel_receipt_no %}Receipt: {{ student.hostel_receipt_no }}{% else %}Fill below to complete{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div style="padding:12px 14px;border-radius:10px;background:{% if student.merit_score > 0 %}#dcfce7{% else %}#fee2e2{% endif %};border:1.5px solid {% if student.merit_score > 0 %}#16a34a{% else %}#dc2626{% endif %};">
+        <div style="font-weight:800;font-size:13px;color:{% if student.merit_score > 0 %}#166534{% else %}#991b1b{% endif %};">
+          {% if student.merit_score > 0 %}✅{% else %}❌{% endif %}
+          ③ In Merit List
+        </div>
+        <div style="font-size:11px;margin-top:4px;color:#64748b;">
+          {% if student.merit_score > 0 %}Score: {{ student.merit_score }}% ({{ student.merit_basis }}){% else %}Add UG/CET/12th marks in student profile{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if student.hostel_approved %}
+  <div style="margin-top:12px;padding:10px 14px;background:#dcfce7;border-radius:8px;color:#166534;font-weight:800;font-size:13px;">🎉 Student is approved for room allocation!</div>
+  {% endif %}
+</div>
+
+<form method="post">
+{% csrf_token %}
+<div class="form-section">
+  <div class="form-section-title">🏠 Hostel Assignment</div>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label fw-bold">Hostel *</label>
+      {{ form.hostel }}
+      {% if form.hostel.errors %}<div class="text-danger small mt-1">{{ form.hostel.errors.0 }}</div>{% endif %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label fw-bold">Room Number</label>
+      <input type="text" name="room" id="id_room" list="room-datalist"
+             value="{{ form.room.value|default:'' }}"
+             class="form-control" placeholder="Select hostel first, then pick room" autocomplete="off"/>
+      <datalist id="room-datalist"></datalist>
+      <div id="room-hint" style="font-size:11px;color:#888;margin-top:4px;"></div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex align-items-center gap-2 mt-4">
+        {{ form.hostel_registered }}
+        <label class="form-label fw-bold mb-0">Hostel Registration Done</label>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-bold">Hostel Receipt No. <span style="color:#dc2626;font-weight:900;">*</span> <small style="font-weight:400;color:#888">(Compulsory)</small></label>
+      {{ form.hostel_receipt_no }}
+      {% if form.hostel_receipt_no.errors %}<div class="text-danger small mt-1">{{ form.hostel_receipt_no.errors.0 }}</div>{% endif %}
+    </div>
+  </div>
+</div>
+
+{% if form.errors %}
+<div class="alert-srtmu alert-error-srtmu">
+  ❌ Please fix the following errors:
+  {% for field, errors in form.errors.items %}{% for error in errors %}<div>• {{ field }}: {{ error }}</div>{% endfor %}{% endfor %}
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-end gap-2">
+  <a href="{% url 'student_detail' student.pk %}" class="btn-ghost">Skip for Now</a>
+  <button type="submit" class="btn-navy">💾 Save Hostel Details</button>
+</div>
+</form>
+
+<script>
+var HOSTEL_ROOMS = {
+  'Boys Hostel 1': {g:{start:1,end:60,pad:2},f:{start:1,end:60,pad:3}},
+  'Boys Hostel 2': {g:{start:61,end:90,pad:2},f:{start:61,end:90,pad:3}},
+  'Boys Hostel 3': {g:{start:1,end:14,pad:2},f:{start:101,end:119,pad:3}},
+  'Boys Hostel 4': {g:{start:1,end:12,pad:2},f:{start:1,end:12,pad:3}}
+};
+function pad(n,len){return String(n).padStart(len,'0');}
+function updateRoomList(hostel){
+  var dl=document.getElementById('room-datalist');
+  var hint=document.getElementById('room-hint');
+  dl.innerHTML='';
+  if(!hostel||!HOSTEL_ROOMS[hostel]){hint.textContent='Please select a hostel first.';return;}
+  var cfg=HOSTEL_ROOMS[hostel],rooms=[];
+  for(var i=cfg.g.start;i<=cfg.g.end;i++)rooms.push('G-'+pad(i,cfg.g.pad));
+  for(var i=cfg.f.start;i<=cfg.f.end;i++)rooms.push('F-'+pad(i,cfg.f.pad));
+  rooms.forEach(function(r){var o=document.createElement('option');o.value=r;dl.appendChild(o);});
+  hint.textContent=hostel+': Ground G-'+pad(cfg.g.start,cfg.g.pad)+' to G-'+pad(cfg.g.end,cfg.g.pad)+' | First F-'+pad(cfg.f.start,cfg.f.pad)+' to F-'+pad(cfg.f.end,cfg.f.pad);
+  var rv=document.getElementById('id_room');
+  if(rv&&rv.value&&rooms.indexOf(rv.value)===-1)rv.value='';
+}
+var hs=document.getElementById('id_hostel');
+if(hs){updateRoomList(hs.value);hs.addEventListener('change',function(){updateRoomList(this.value);});}
+</script>
+{% endblock %}

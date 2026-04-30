@@ -1,0 +1,277 @@
+{% extends 'hostel/base.html' %}
+{% block title_suffix %} - Room Grid{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">🏠 Room Grid</h1>
+  <a href="{% url 'room_allocation' %}" class="btn-ghost">🛏️ Room Allocation Page</a>
+</div>
+
+{% if unmatched_students %}
+<div style="background:#fff7ed;border:2px solid #f97316;border-radius:12px;padding:16px 20px;margin-bottom:18px;">
+  <div style="font-weight:900;color:#c2410c;font-size:14px;margin-bottom:10px;">
+    ⚠️ {{ unmatched_students|length }} student(s) have room codes that don't match their hostel's grid.
+  </div>
+  <table style="width:100%;font-size:13px;border-collapse:collapse;">
+    <thead><tr style="text-align:left;color:#9a3412;font-weight:800;">
+      <th style="padding:4px 10px;">Student</th><th style="padding:4px 10px;">Hostel</th>
+      <th style="padding:4px 10px;">Stored Room</th><th style="padding:4px 10px;">Action</th>
+    </tr></thead>
+    <tbody>
+    {% for s in unmatched_students %}
+    <tr style="border-top:1px solid #fed7aa;">
+      <td style="padding:6px 10px;font-weight:700;">{{ s.name }}</td>
+      <td style="padding:6px 10px;">{{ s.hostel }}</td>
+      <td style="padding:6px 10px;color:#dc2626;font-family:monospace;">{{ s.stored_room }}</td>
+      <td style="padding:6px 10px;"><a href="/students/{{ s.pk }}/edit/" style="color:#1a3a6e;font-weight:800;text-decoration:underline;">✏️ Fix</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Legend -->
+<div class="card-srtmu" style="padding:10px 18px;margin-bottom:14px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-size:12px;">
+  <span class="d-flex align-items-center gap-2"><div style="width:14px;height:14px;border-radius:3px;background:#fee2e2;border:2px solid #ef4444;"></div> Full (3 students)</span>
+  <span class="d-flex align-items-center gap-2"><div style="width:14px;height:14px;border-radius:3px;background:#fef9c3;border:2px solid #f59e0b;"></div> Partial (1-2)</span>
+  <span class="d-flex align-items-center gap-2"><div style="width:14px;height:14px;border-radius:3px;background:#f0fdf4;border:2px solid #86efac;"></div> Empty</span>
+  <span style="color:var(--muted);">Click any room · Add up to 3 students per room</span>
+</div>
+
+<!-- Tabs -->
+<div class="d-flex gap-2 mb-3 flex-wrap" id="hostelTabs">
+  {% for h in hostels_data %}
+  <button onclick="showHostel({{ forloop.counter0 }})" id="tab-{{ forloop.counter0 }}"
+    style="padding:10px 20px;border-radius:10px;border:2px solid {{ h.color }};font-weight:800;font-size:13px;cursor:pointer;transition:all .15s;background:{% if forloop.first %}{{ h.color }}{% else %}#fff{% endif %};color:{% if forloop.first %}#fff{% else %}{{ h.color }}{% endif %};">
+    {{ h.name }} <span style="margin-left:4px;font-size:11px;opacity:.8;">{{ h.student_count }} students</span>
+  </button>
+  {% endfor %}
+</div>
+
+{% for h in hostels_data %}
+<div id="hostel-{{ forloop.counter0 }}" class="hostel-panel" {% if not forloop.first %}style="display:none"{% endif %}>
+  <div class="row g-3 mb-3">
+    <div class="col-3"><div class="stat-card" style="border-top:3px solid {{ h.color }}"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Rooms</div><div style="font-size:22px;font-weight:900;color:{{ h.color }}">{{ h.total }}</div></div></div>
+    <div class="col-3"><div class="stat-card" style="border-top:3px solid #ef4444"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Occupied</div><div style="font-size:22px;font-weight:900;color:#ef4444">{{ h.occupied }}</div></div></div>
+    <div class="col-3"><div class="stat-card" style="border-top:3px solid #22c55e"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Empty</div><div style="font-size:22px;font-weight:900;color:#22c55e">{{ h.empty }}</div></div></div>
+    <div class="col-3"><div class="stat-card" style="border-top:3px solid var(--navy)"><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase">Students</div><div style="font-size:22px;font-weight:900;color:var(--navy)">{{ h.student_count }}</div></div></div>
+  </div>
+
+  {% if h.g_rooms %}
+  <div class="card-srtmu mb-3">
+    <h3 style="font-size:13px;font-weight:900;color:var(--navy);margin-bottom:12px;">🏢 Ground Floor</h3>
+    <div class="d-flex flex-wrap gap-2">
+      {% for r in h.g_rooms %}{% with c=r.students|length %}
+      <div onclick="showRoomModal('{{ r.room|escapejs }}','{{ h.name|escapejs }}')"
+        style="padding:8px 6px;border-radius:8px;border:2px solid {% if c >= 3 %}#ef4444{% elif c > 0 %}#f59e0b{% else %}#d1fae5{% endif %};background:{% if c >= 3 %}#fee2e2{% elif c > 0 %}#fef9c3{% else %}#f0fdf4{% endif %};cursor:pointer;text-align:center;min-width:62px;transition:transform .12s;"
+        onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='none'">
+        <div style="font-size:10px;font-weight:800;color:{% if c >= 3 %}#dc2626{% elif c > 0 %}#92400e{% else %}#15803d{% endif %}">{{ r.room }}</div>
+        {% if c > 0 %}<div style="font-size:11px;font-weight:800;color:{% if c >= 3 %}#dc2626{% else %}#b45309{% endif %};">👤{{ c }}</div>
+        {% else %}<div style="font-size:10px;color:#86efac;">Empty</div>{% endif %}
+      </div>{% endwith %}{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if h.f_rooms %}
+  <div class="card-srtmu">
+    <h3 style="font-size:13px;font-weight:900;color:var(--navy);margin-bottom:12px;">🏢 First Floor</h3>
+    <div class="d-flex flex-wrap gap-2">
+      {% for r in h.f_rooms %}{% with c=r.students|length %}
+      <div onclick="showRoomModal('{{ r.room|escapejs }}','{{ h.name|escapejs }}')"
+        style="padding:8px 6px;border-radius:8px;border:2px solid {% if c >= 3 %}#ef4444{% elif c > 0 %}#f59e0b{% else %}#d1fae5{% endif %};background:{% if c >= 3 %}#fee2e2{% elif c > 0 %}#fef9c3{% else %}#f0fdf4{% endif %};cursor:pointer;text-align:center;min-width:62px;transition:transform .12s;"
+        onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='none'">
+        <div style="font-size:10px;font-weight:800;color:{% if c >= 3 %}#dc2626{% elif c > 0 %}#92400e{% else %}#15803d{% endif %}">{{ r.room }}</div>
+        {% if c > 0 %}<div style="font-size:11px;font-weight:800;color:{% if c >= 3 %}#dc2626{% else %}#b45309{% endif %};">👤{{ c }}</div>
+        {% else %}<div style="font-size:10px;color:#86efac;">Empty</div>{% endif %}
+      </div>{% endwith %}{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+
+<!-- ═══════ MODAL ═══════ -->
+<div id="roomModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;align-items:center;justify-content:center;padding:20px;">
+  <div id="modalBox" style="background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.3);animation:fadeUp .2s ease;">
+
+    <!-- header -->
+    <div style="padding:20px 22px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;border-radius:16px 16px 0 0;">
+      <div>
+        <h2 id="modalRoomTitle" style="font-size:18px;font-weight:900;color:#1a3a6e;margin:0;"></h2>
+        <div id="modalHostelName" style="font-size:12px;color:#64748b;"></div>
+      </div>
+      <button onclick="closeModal()" style="background:#f1f5f9;border:none;border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+
+    <!-- capacity -->
+    <div id="capBar" style="padding:14px 22px 0;"></div>
+
+    <!-- occupants -->
+    <div id="modalOccupants" style="padding:14px 22px 0;"></div>
+
+    <!-- add student -->
+    <div id="addSection" style="padding:14px 22px 20px;"></div>
+  </div>
+</div>
+
+<style>
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+</style>
+
+<script>
+var HOSTEL_DATA  = {{ hostels_json|safe }};
+var ASSIGN_URL   = "{% url 'room_assign' %}";
+var STUDENTS_URL = "{% url 'room_students_json' %}";
+var CSRF         = "{{ csrf_token }}";
+var MAX_ROOM     = 3;
+var _room = '', _hostel = '';
+
+/* tabs */
+function showHostel(idx){
+  document.querySelectorAll('.hostel-panel').forEach(function(p,i){p.style.display=i===idx?'block':'none';});
+  var colors={{ hostel_colors|safe }};
+  document.querySelectorAll('#hostelTabs button').forEach(function(t,i){
+    t.style.background=i===idx?colors[i]:'#fff'; t.style.color=i===idx?'#fff':colors[i];
+  });
+}
+
+/* open modal */
+function showRoomModal(room, hostel){
+  _room=room; _hostel=hostel;
+  document.getElementById('modalRoomTitle').textContent='Room '+room;
+  document.getElementById('modalHostelName').textContent=hostel;
+
+  var hd=HOSTEL_DATA.find(function(h){return h.name===hostel;});
+  var allR=hd?hd.g_rooms.concat(hd.f_rooms):[];
+  var ro=allR.find(function(r){return r.room===room;});
+  var studs=ro?ro.students:[];
+  var c=studs.length;
+
+  /* capacity bar */
+  var pct=Math.min(c/MAX_ROOM*100,100);
+  var col=c>=MAX_ROOM?'#ef4444':c>0?'#f59e0b':'#22c55e';
+  var lbl=c>=MAX_ROOM?'FULL — 3/3':c+' / '+MAX_ROOM+' students';
+  document.getElementById('capBar').innerHTML=
+    '<div style="display:flex;align-items:center;gap:10px;">'+
+    '<div style="flex:1;height:9px;background:#f1f5f9;border-radius:5px;overflow:hidden;">'+
+    '<div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:5px;"></div></div>'+
+    '<span style="font-size:12px;font-weight:800;color:'+col+';">'+lbl+'</span></div>';
+
+  /* occupants */
+  var occ=document.getElementById('modalOccupants');
+  if(c===0){
+    occ.innerHTML='<div style="text-align:center;padding:18px 0 8px;color:#94a3b8;"><div style="font-size:32px;">🏠</div><div style="font-size:13px;font-weight:700;margin-top:6px;">Room is empty</div></div>';
+  } else {
+    occ.innerHTML='<div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Occupants ('+c+')</div>'+
+      studs.map(function(s){
+        return '<div style="display:flex;gap:10px;padding:11px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:8px;align-items:center;">'+
+          '<div style="width:36px;height:36px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">👤</div>'+
+          '<div style="flex:1;min-width:0;">'+
+            '<div style="font-weight:800;font-size:14px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+eh(s.name)+'</div>'+
+            '<div style="font-size:11px;color:#64748b;">'+eh(s.course)+' · '+eh(s.year)+'</div>'+
+          '</div>'+
+          '<div style="display:flex;gap:5px;">'+
+            '<a href="/students/'+s.pk+'/" style="padding:5px 9px;border-radius:6px;background:#dbeafe;color:#1d4ed8;font-weight:800;font-size:11px;text-decoration:none;">View</a>'+
+            '<button onclick="removeStudent('+s.pk+',\''+ej(s.name)+'\')" style="padding:5px 9px;border-radius:6px;background:#fee2e2;color:#dc2626;border:none;font-weight:800;font-size:11px;cursor:pointer;">Remove</button>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+  }
+
+  /* add section */
+  var add=document.getElementById('addSection');
+  if(c>=MAX_ROOM){
+    add.innerHTML='<div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;color:#dc2626;text-align:center;">🚫 Room full — max '+MAX_ROOM+' students per room</div>';
+  } else {
+    add.innerHTML=
+      '<div style="border-top:1px solid #f1f5f9;padding-top:14px;">'+
+      '<div style="font-weight:900;font-size:13px;color:#1a3a6e;margin-bottom:10px;">➕ Add Student to this Room</div>'+
+      '<div style="display:flex;gap:8px;">'+
+        '<select id="stuSel" class="form-select" style="flex:1;">'+
+          '<option value="">Loading…</option>'+
+        '</select>'+
+        '<button onclick="doAdd()" style="padding:10px 16px;border-radius:8px;background:#1a3a6e;color:#fff;border:none;font-weight:900;font-size:13px;cursor:pointer;white-space:nowrap;">✅ Add</button>'+
+      '</div>'+
+      '<div id="addMsg" style="font-size:11px;color:#64748b;margin-top:5px;"></div>'+
+      '</div>';
+    loadStudents(hostel, studs.map(function(s){return s.pk;}));
+  }
+
+  document.getElementById('roomModal').style.display='flex';
+}
+
+function closeModal(){document.getElementById('roomModal').style.display='none';}
+document.getElementById('roomModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* load approved students into dropdown */
+function loadStudents(hostel, alreadyInRoom){
+  fetch(STUDENTS_URL+'?eligible_only=1')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var sel=document.getElementById('stuSel');
+      if(!sel)return;
+      var available=d.students.filter(function(s){return alreadyInRoom.indexOf(s.pk)===-1;});
+      if(available.length===0){
+        sel.innerHTML='<option value="">No approved students available</option>';
+        var m=document.getElementById('addMsg');
+        if(m)m.textContent='Approve students from Hostel Admission page first.';
+        return;
+      }
+      /* no room first, then already in a room (move) */
+      var noRoom=available.filter(function(s){return !s.room||s.room.trim()==='';});
+      var inRoom=available.filter(function(s){return s.room&&s.room.trim()!=='';});
+      sel.innerHTML='<option value="">— Select student to add —</option>';
+      if(noRoom.length){
+        sel.innerHTML+='<optgroup label="Waiting for room ('+noRoom.length+')">'+
+          noRoom.map(function(s){return '<option value="'+s.pk+'">'+s.name+' — '+s.course+'</option>';}).join('')+'</optgroup>';
+      }
+      if(inRoom.length){
+        sel.innerHTML+='<optgroup label="Move from another room ('+inRoom.length+')">'+
+          inRoom.map(function(s){return '<option value="'+s.pk+'">'+s.name+' ('+s.hostel+' / '+s.room+')</option>';}).join('')+'</optgroup>';
+      }
+      var m=document.getElementById('addMsg');
+      if(m)m.textContent=noRoom.length+' waiting · '+inRoom.length+' in other rooms (will be moved)';
+    });
+}
+
+/* add student to room */
+function doAdd(){
+  var sel=document.getElementById('stuSel');
+  if(!sel||!sel.value){alert('Please select a student.');return;}
+  var btn=document.querySelector('#addSection button');
+  if(btn){btn.disabled=true;btn.textContent='Adding…';}
+  var fd=new FormData();
+  fd.append('student_pk',sel.value);
+  fd.append('room',_room);
+  fd.append('hostel',_hostel);
+  fd.append('csrfmiddlewaretoken',CSRF);
+  fetch(ASSIGN_URL,{method:'POST',body:fd})
+    .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});})
+    .then(function(res){
+      if(res.d.ok){closeModal();toast('✅ '+res.d.student+' added to Room '+res.d.room);setTimeout(function(){location.reload();},1100);}
+      else{alert('❌ '+(res.d.error||'Error'));if(btn){btn.disabled=false;btn.textContent='✅ Add';}}
+    }).catch(function(){alert('Network error');if(btn){btn.disabled=false;btn.textContent='✅ Add';}});
+}
+
+/* remove student from room */
+function removeStudent(pk,name){
+  if(!confirm('Remove room from '+name+'?\nThey will be marked as waiting for allocation.'))return;
+  var fd=new FormData();
+  fd.append('student_pk',pk);fd.append('room','');fd.append('hostel',_hostel);fd.append('csrfmiddlewaretoken',CSRF);
+  fetch(ASSIGN_URL,{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(d){
+    if(d.ok){closeModal();toast('✅ Room removed for '+name);setTimeout(function(){location.reload();},1100);}
+  });
+}
+
+function toast(msg){
+  var t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a3a6e;color:#fff;padding:12px 22px;border-radius:10px;font-weight:800;font-size:14px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.25);';
+  document.body.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(function(){t.remove();},400);},1800);
+}
+function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function ej(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+</script>
+{% endblock %}
