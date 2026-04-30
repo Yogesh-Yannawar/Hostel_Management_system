@@ -30,13 +30,7 @@ Visit: http://127.0.0.1:8000/
 - Shows hostel name, room, fee info, warden signature block
 - Printable with Hostel Warden stamp space
 
-### 3. 🏆 Merit List (Department-wise)
-- Sidebar → **Merit List**
-- Automatically ranks students by average marks (12th/UG/PG)
-- Filter by department, hostel, level, academic year
-- Gold 🥇 Silver 🥈 Bronze 🥉 medals for top 3
-
-### 4. ⚙️ Hostel Admission Configuration
+### 3. ⚙️ Hostel Admission Configuration
 - Sidebar → **Hostel Admission**
 - Rule enforced: Student must have BOTH:
   - ✅ University Admission confirmed
@@ -44,11 +38,11 @@ Visit: http://127.0.0.1:8000/
 - Warden can Approve or Revoke hostel admission here
 - Dashboard shows pending approvals count
 
-### 5. 🏠 Room Allocation
+### 4. 🏠 Room Allocation
 - Sidebar → **Room Grid** — Visual room map for all 4 hostels
 - Assign/reassign rooms with AJAX (no page reload)
 
-### 6. ✅ Data Validation (All Fields)
+### 5. ✅ Data Validation (All Fields)
 
 | Field | Rule |
 |-------|------|
